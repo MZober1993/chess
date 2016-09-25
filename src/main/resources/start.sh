@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-java -jar ~/dev/chess/target/chess.jar
+java -jar ./../../../target/chess.jar
