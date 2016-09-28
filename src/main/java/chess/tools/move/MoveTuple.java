@@ -1,11 +1,11 @@
-package chess.tools;
+package chess.tools.move;
 
 public class MoveTuple {
     private final Position begin;
     private final Position end;
     private final boolean possible;
 
-    MoveTuple(Position begin, Position end, boolean possible) {
+    public MoveTuple(Position begin, Position end, boolean possible) {
 
         this.begin = begin;
         this.end = end;

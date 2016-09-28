@@ -1,4 +1,7 @@
-package chess.tools;
+package chess.tools.game;
+
+import chess.tools.move.MoveTuple;
+import chess.tools.move.Position;
 
 public class CommandParser {
 

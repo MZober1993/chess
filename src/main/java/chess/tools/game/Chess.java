@@ -1,4 +1,7 @@
-package chess.tools;
+package chess.tools.game;
+
+import chess.tools.move.MoveTuple;
+import chess.tools.move.Position;
 
 import java.io.Console;
 import java.util.List;
@@ -51,10 +54,18 @@ public class Chess {
         System.out.println(move);
         final Position begin = move.getBegin();
         final Position end = move.getEnd();
+        //TODO: check if MoveStrategy matches the given end Position
         Figure oldBegin = board[begin.getC()][begin.getR()];
-        Figure oldEnd = board[end.getC()][end.getR()];
-        board[end.getC()][end.getR()] = oldBegin;
-        board[begin.getC()][begin.getR()] = Figure.EMPTY;
+        if (oldBegin.verifyMove(begin, end, board)) {
+            Figure oldEnd = board[end.getC()][end.getR()];
+            board[end.getC()][end.getR()] = oldBegin;
+            board[begin.getC()][begin.getR()] = Figure.EMPTY;
+            //TODO: move does not change
+            System.out.println("Move done");
+        } else {
+            System.out.println("Please try again!");
+        }
+
     }
 
     public boolean isCheckMate() {

@@ -1,4 +1,4 @@
-package chess.tools;
+package chess.tools.game;
 
 import java.util.Arrays;
 import java.util.List;
