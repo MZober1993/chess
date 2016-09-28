@@ -21,6 +21,7 @@ public class PawnMode implements VerifyMode {
         if (current.equals(Figure.EMPTY)) {
             return false;
         }
+        //TODO: chess-checking for the end-pos
         List<Position> possiblePositions = new ArrayList<>();
         for (Direction dir : directions) {
             final Position newPos = new Position(begin.getR() + dir.getR(), begin.getC() + dir.getC());

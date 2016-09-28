@@ -25,6 +25,7 @@ public class DefaultMode implements VerifyMode {
             return false;
         }
         List<Position> possiblePositions = new ArrayList<>();
+        //TODO: chess-checking for the end-pos
         int endOffset = repeating ? 8 : 2;
         for (Direction dir : directions) {
             for (int i = 1; i < endOffset; i++) {
