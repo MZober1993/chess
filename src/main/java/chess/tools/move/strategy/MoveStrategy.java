@@ -7,8 +7,8 @@ import chess.tools.move.Position;
 import java.util.Collections;
 
 public enum MoveStrategy {
-    BB(new DefaultMode(false, Direction.PAWN_BLACK)),
-    BW(new DefaultMode(false, Direction.PAWN_WHITE)),
+    BB(new PawnMode(Direction.PAWN_BLACK)),
+    BW(new PawnMode(Direction.PAWN_WHITE)),
     K(new DefaultMode(false, Direction.QUEEN)),
     S(new DefaultMode(false, Direction.SPRINGER)),
     D(new DefaultMode(true, Direction.QUEEN)),

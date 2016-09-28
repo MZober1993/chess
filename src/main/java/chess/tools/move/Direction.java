@@ -20,7 +20,7 @@ public class Direction {
             .collect(Collectors.toList());
     public static final List<Direction> PAWN_WHITE = Stream.of(new Direction(0, -1, false), new Direction(1, -1)
             , new Direction(-1, -1)).collect(Collectors.toList());
-    public static final List<Direction> PAWN_BLACK = Stream.of(new Direction(0, 1, true), new Direction(1, 1)
+    public static final List<Direction> PAWN_BLACK = Stream.of(new Direction(0, 1, false), new Direction(1, 1)
             , new Direction(-1, 1)).collect(Collectors.toList());
 
     private final int i;
