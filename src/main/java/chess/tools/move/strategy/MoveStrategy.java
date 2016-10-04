@@ -25,4 +25,8 @@ public enum MoveStrategy {
     public boolean verify(Position begin, Position end, Figure[][] board) {
         return verifyMode.verify(begin, end, board);
     }
+
+    public VerifyMode getVerifyMode() {
+        return verifyMode;
+    }
 }

@@ -27,6 +27,6 @@ public class CommandParser {
 
     private Position extractPosition(String term) {
         final int line = term.charAt(1) - OFFSET_ZERO;
-        return new Position(OFFSET_FOR_A - term.charAt(0), MAX_ARRAY_OFFSET - line);
+        return new Position(MAX_ARRAY_OFFSET - line, OFFSET_FOR_A - term.charAt(0));
     }
 }

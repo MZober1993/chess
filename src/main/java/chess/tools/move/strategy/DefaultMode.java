@@ -1,11 +1,13 @@
 package chess.tools.move.strategy;
 
+import chess.tools.game.Chess;
 import chess.tools.game.Figure;
 import chess.tools.move.Direction;
 import chess.tools.move.Position;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DefaultMode implements VerifyMode {
 
@@ -13,31 +15,25 @@ public class DefaultMode implements VerifyMode {
     private final List<Direction> directions;
 
     DefaultMode(boolean repeating, List<Direction> directions) {
-
         this.repeating = repeating;
         this.directions = directions;
     }
 
     @Override
-    public boolean verify(Position begin, Position end, Figure[][] board) {
-        final Figure current = Figure.figureForPos(board, begin);
-        if (current.equals(Figure.EMPTY)) {
-            return false;
-        }
-        List<Position> possiblePositions = new ArrayList<>();
-        //TODO: chess-checking for the end-pos
+    public List<Position> possibleFields(Figure current, Position begin, Figure[][] board) {
+        List<Position> possibleFields = new ArrayList<>();
         int endOffset = repeating ? 8 : 2;
         for (Direction dir : directions) {
             for (int i = 1; i < endOffset; i++) {
-                final Position newPos = new Position(begin.getR() + i * dir.getR(), begin.getC() + i * dir.getC());
-                System.out.println("newPos = " + newPos);
+                final Position newPos = new Position(begin.getC() + i * dir.getC(), begin.getR() + i * dir.getR());
+                //System.out.println("newPos = " + newPos);
                 if (newPos.isValid()) {
                     final Figure newFigure = Figure.figureForPos(board, newPos);
-                    System.out.println("newFigure = " + newFigure + ", pos: " + newPos);
+                    //System.out.println("newFigure = " + newFigure + ", pos: " + newPos);
                     if (newFigure.equals(Figure.EMPTY)) {
-                        possiblePositions.add(newPos);
+                        possibleFields.add(newPos);
                     } else if (current.isOppositeColor(newFigure)) {
-                        possiblePositions.add(newPos);
+                        possibleFields.add(newPos);
                         break;
                     } else {
                         break;
@@ -45,7 +41,10 @@ public class DefaultMode implements VerifyMode {
                 }
             }
         }
-        System.out.println("possiblePositions = " + possiblePositions);
-        return possiblePositions.contains(end);
+        System.out.println(possibleFields.stream().map(pos -> Chess.MAPPING.getCommandMapping().get(pos))
+                .collect(Collectors.toList()));
+
+        //System.out.println("possibleFields = " + possibleFields);
+        return possibleFields;
     }
 }

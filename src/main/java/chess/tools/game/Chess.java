@@ -13,25 +13,38 @@ public class Chess {
     private Console console = System.console();
     private CommandParser parser = new CommandParser();
     private boolean checkmate = false;
+    public static final PositionMapping MAPPING = new PositionMapping();
 
-    public Chess() {
+    public Chess(boolean gameModeOn) {
         initialize();
 
         System.out.println(boardToString());
-        do {
-            turn();
+        if (gameModeOn) {
+            do {
+                turn();
+                System.out.println(boardToString());
+                calculateCheckMate();
+            } while (!isCheckMate());
+        }
+    }
+
+    public Chess(List<String> terms) {
+        initialize();
+        terms.forEach(term -> {
             System.out.println(boardToString());
+            turn(term);
             calculateCheckMate();
-        } while (!isCheckMate());
+        });
+        System.out.println(boardToString());
     }
 
     private void calculateCheckMate() {
 
     }
 
-    private void initialize() {
-        final List<Figure> blackCoreLine = Color.BLACK.allWithoutPawn();
-        final List<Figure> whiteCoreLine = Color.WHITE.allWithoutPawn();
+    public Figure[][] initialize() {
+        final List<Figure> blackCoreLine = ChessColor.BLACK.allWithoutPawn();
+        final List<Figure> whiteCoreLine = ChessColor.WHITE.allWithoutPawn();
         for (int j = 0; j < 8; j++) {
             board[0][j] = blackCoreLine.get(j);
             board[1][j] = Figure.BB;
@@ -41,16 +54,22 @@ public class Chess {
                 board[i][j] = Figure.EMPTY;
             }
         }
+        return board;
     }
 
-    public void turn() {
-        String command = console.readLine(INFO_ABOUT_TURN);
-        MoveTuple move = parser.parse(command);
-        while (!move.isPossible()) {
+    private void turn(String term) {
+        MoveTuple move = parser.parse(term);
+        if (!move.isPossible()) {
             System.out.println("Please choose an other move, this one is not possible.");
-            command = console.readLine(INFO_ABOUT_TURN);
-            move = parser.parse(command);
+        } else {
+            System.out.println(move.getBegin());
+            System.out.println("Move:" + MAPPING.getCommandMapping().get(move.getBegin()) + ","
+                    + MAPPING.getCommandMapping().get(move.getEnd()));
+            doMove(move);
         }
+    }
+
+    private void doMove(MoveTuple move) {
         System.out.println(move);
         final Position begin = move.getBegin();
         final Position end = move.getEnd();
@@ -63,7 +82,17 @@ public class Chess {
         } else {
             System.out.println("Please try again!");
         }
+    }
 
+    public void turn() {
+        String command = console.readLine(INFO_ABOUT_TURN);
+        MoveTuple move = parser.parse(command);
+        while (!move.isPossible()) {
+            System.out.println("Please choose an other move, this one is not possible.");
+            command = console.readLine(INFO_ABOUT_TURN);
+            move = parser.parse(command);
+        }
+        doMove(move);
     }
 
     public boolean isCheckMate() {
@@ -85,5 +114,16 @@ public class Chess {
         }
         result += column;
         return result;
+    }
+
+    public Figure[][] getBoard() {
+        return board;
+    }
+
+
+    public Position calcPosition(int index) {
+        final int i = index / 8;
+        final int j = index % 8;
+        return new Position(j, i);
     }
 }

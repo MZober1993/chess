@@ -7,21 +7,21 @@ public class Position {
 
     public Position(int i, int j) {
 
-        this.i = Math.abs(i);
         this.j = Math.abs(j);
-        valid = !(i > 7 || j > 7);
+        this.i = Math.abs(i);
+        valid = !(j > 7 || i > 7);
     }
 
     Position(Position position) {
-        this(position.getR(), position.getC());
+        this(position.getC(), position.getR());
     }
 
     public int getR() {
-        return i;
+        return j;
     }
 
     public int getC() {
-        return j;
+        return i;
     }
 
     public boolean isValid() {
@@ -35,15 +35,15 @@ public class Position {
 
         Position position = (Position) o;
 
-        if (i != position.i) return false;
-        return j == position.j;
+        if (j != position.j) return false;
+        return i == position.i;
 
     }
 
     @Override
     public int hashCode() {
-        int result = i;
-        result = 31 * result + j;
+        int result = j;
+        result = 31 * result + i;
         return result;
     }
 
