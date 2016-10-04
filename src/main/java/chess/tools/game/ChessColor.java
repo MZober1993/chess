@@ -24,6 +24,11 @@ public enum ChessColor {
                 .collect(Collectors.toList());
     }
 
+    public List<Figure> allPawns() {
+        return Arrays.stream(Figure.values()).filter(f -> f.getColor().equals(this) && f.getTerm() == 'B')
+                .collect(Collectors.toList());
+    }
+
     public Figure king() {
         if (this.equals(ChessColor.WHITE)) {
             return Figure.KW;

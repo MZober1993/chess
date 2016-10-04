@@ -20,8 +20,9 @@ public class DefaultMode implements VerifyMode {
     }
 
     @Override
-    public List<Position> possibleFields(Figure current, Position begin, Figure[][] board) {
+    public List<Position> possibleFields(Figure current, Figure[][] board) {
         List<Position> possibleFields = new ArrayList<>();
+        Position begin = current.getPosition();
         int endOffset = repeating ? 8 : 2;
         for (Direction dir : directions) {
             for (int i = 1; i < endOffset; i++) {

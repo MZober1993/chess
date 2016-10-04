@@ -18,8 +18,9 @@ public class PawnMode implements VerifyMode {
     }
 
     @Override
-    public List<Position> possibleFields(Figure current, Position begin, Figure[][] board) {
+    public List<Position> possibleFields(Figure current, Figure[][] board) {
         List<Position> possibleFields = new ArrayList<>();
+        Position begin = current.getPosition();
         for (Direction dir : directions) {
             final Position newPos = new Position(begin.getC() + dir.getC(), begin.getR() + dir.getR());
 

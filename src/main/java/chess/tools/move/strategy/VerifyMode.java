@@ -1,6 +1,5 @@
 package chess.tools.move.strategy;
 
-import chess.tools.game.ChessColor;
 import chess.tools.game.Figure;
 import chess.tools.move.Position;
 
@@ -14,7 +13,7 @@ public interface VerifyMode {
         if (current.equals(Figure.EMPTY)) {
             return false;
         }
-        final List<Position> positions = possibleFields(current, begin, board);
+        final List<Position> positions = possibleFields(current, board);
         return !positions.isEmpty() && positions.contains(end)
                 && !verifyOwnChess(begin, end, board, current);
     }
@@ -25,23 +24,18 @@ public interface VerifyMode {
         final Figure endFigure = board[end.getC()][end.getR()];
         board[end.getC()][end.getR()] = current;
 
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                Figure figure = board[i][j];
-                if (!figure.getColor().equals(ChessColor.EMPTY) && figure.isOppositeColor(current)) {
-                    final List<Position> positions = figure.getMoveStrategy().getVerifyMode()
-                            .possibleFields(figure, new Position(i, j), board);
-                    final List<Figure> figures = positions
-                            .stream().map(pos -> Figure.figureForPos(board, pos)).collect(Collectors.toList());
-                    System.out.println(figure.getColor() + " " + figure + " found figures = " + figures);
-                    System.out.println();
-                    if (figures.stream().anyMatch(f -> f.equals(current.getColor().king()))) {
-                        board[begin.getC()][begin.getR()] = current;
-                        board[end.getC()][end.getR()] = endFigure;
-                        System.out.println("If you do that, your king will be chess.");
-                        return true;
-                    }
-                }
+        for (Figure figure : current.getColor().oppositColor().allFromColor()) {
+            final List<Position> positions = figure.getMoveStrategy().getVerifyMode()
+                    .possibleFields(figure, board);
+            final List<Figure> figures = positions
+                    .stream().map(pos -> Figure.figureForPos(board, pos)).collect(Collectors.toList());
+            System.out.println(figure.getColor() + " " + figure + " found figures = " + figures);
+            System.out.println();
+            if (figures.stream().anyMatch(f -> f.equals(current.getColor().king()))) {
+                board[begin.getC()][begin.getR()] = current;
+                board[end.getC()][end.getR()] = endFigure;
+                System.out.println("If you do that, your king will be chess.");
+                return true;
             }
         }
 
@@ -50,5 +44,5 @@ public interface VerifyMode {
         return false;
     }
 
-    List<Position> possibleFields(Figure current, Position begin, Figure[][] board);
+    List<Position> possibleFields(Figure current, Figure[][] board);
 }

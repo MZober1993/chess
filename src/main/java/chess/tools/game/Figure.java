@@ -16,7 +16,14 @@ public enum Figure {
     LBF(ChessColor.BLACK, MoveStrategy.L),
     SBG(ChessColor.BLACK, MoveStrategy.S),
     TBH(ChessColor.BLACK, MoveStrategy.T),
-    BB(ChessColor.BLACK, MoveStrategy.BB),
+    BBA(ChessColor.BLACK, MoveStrategy.BB),
+    BBB(ChessColor.BLACK, MoveStrategy.BB),
+    BBC(ChessColor.BLACK, MoveStrategy.BB),
+    BBD(ChessColor.BLACK, MoveStrategy.BB),
+    BBE(ChessColor.BLACK, MoveStrategy.BB),
+    BBF(ChessColor.BLACK, MoveStrategy.BB),
+    BBG(ChessColor.BLACK, MoveStrategy.BB),
+    BBH(ChessColor.BLACK, MoveStrategy.BB),
     TWA(ChessColor.WHITE, MoveStrategy.T),
     SWB(ChessColor.WHITE, MoveStrategy.S),
     LWC(ChessColor.WHITE, MoveStrategy.L),
@@ -25,14 +32,21 @@ public enum Figure {
     LWF(ChessColor.WHITE, MoveStrategy.L),
     SWG(ChessColor.WHITE, MoveStrategy.S),
     TWH(ChessColor.WHITE, MoveStrategy.T),
-    BW(ChessColor.WHITE, MoveStrategy.BW),
+    BWA(ChessColor.WHITE, MoveStrategy.BW),
+    BWB(ChessColor.WHITE, MoveStrategy.BW),
+    BWC(ChessColor.WHITE, MoveStrategy.BW),
+    BWD(ChessColor.WHITE, MoveStrategy.BW),
+    BWE(ChessColor.WHITE, MoveStrategy.BW),
+    BWF(ChessColor.WHITE, MoveStrategy.BW),
+    BWG(ChessColor.WHITE, MoveStrategy.BW),
+    BWH(ChessColor.WHITE, MoveStrategy.BW),
     EMPTY(ChessColor.EMPTY, MoveStrategy.EMPTY);
 
     private final ChessColor color;
     private final MoveStrategy moveStrategy;
     private final char term;
     private FigureLabel figureLabel;
-    private int index;
+    private Position position = new Position(0, 0);
 
     Figure(ChessColor color, MoveStrategy moveStrategy) {
         if (color.equals(ChessColor.EMPTY)) {
@@ -77,7 +91,7 @@ public enum Figure {
         this.figureLabel = new FigureLabel(String.valueOf(getTerm()), this.getColor());
         figureLabel.setFigure(this);
         figureLabel.setIndex(i);
-        setIndex(i);
+        setPosition(new Position(i));
         return figureLabel;
     }
 
@@ -85,21 +99,15 @@ public enum Figure {
         return figureLabel;
     }
 
-    public int getIndex() {
-        return index;
+    public Position getPosition() {
+        return position;
     }
 
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
-    public Position calcPosition() {
-        final int i = this.index / 8;
-        final int j = this.index % 8;
-        return new Position(j, i);
+    public void setPosition(Position position) {
+        this.position = position;
     }
 
     public List<Position> possibleFields(Figure[][] board) {
-        return getMoveStrategy().getVerifyMode().possibleFields(this, calcPosition(), board);
+        return getMoveStrategy().getVerifyMode().possibleFields(this, board);
     }
 }

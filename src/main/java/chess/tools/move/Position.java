@@ -4,11 +4,19 @@ public class Position {
     private final int i;
     private final int j;
     private final boolean valid;
+    private final int index;
 
     public Position(int i, int j) {
-
         this.j = Math.abs(j);
         this.i = Math.abs(i);
+        this.index = i + 8 * j;
+        valid = !(j > 7 || i > 7);
+    }
+
+    public Position(int index) {
+        this.index = index;
+        this.j = Math.abs(index % 8);
+        this.i = Math.abs(index / 8);
         valid = !(j > 7 || i > 7);
     }
 
@@ -24,6 +32,10 @@ public class Position {
         return valid;
     }
 
+    public int getIndex() {
+        return index;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -31,20 +43,19 @@ public class Position {
 
         Position position = (Position) o;
 
-        if (j != position.j) return false;
-        return i == position.i;
-
+        if (i != position.i) return false;
+        return j == position.j;
     }
 
     @Override
     public int hashCode() {
-        int result = j;
-        result = 31 * result + i;
+        int result = i;
+        result = 31 * result + j;
         return result;
     }
 
     @Override
     public String toString() {
-        return "[i:" + i + ",j:" + j + "]";
+        return "[i:" + i + ",j:" + j + ",id:" + index + "]";
     }
 }
