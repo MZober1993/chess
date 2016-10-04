@@ -16,10 +16,10 @@ public interface VerifyMode {
         }
         final List<Position> positions = possibleFields(current, begin, board);
         return !positions.isEmpty() && positions.contains(end)
-                && !chessCheck(begin, end, board, current);
+                && !verifyOwnChess(begin, end, board, current);
     }
 
-    default boolean chessCheck(Position begin, Position end, Figure[][] board, Figure current) {
+    default boolean verifyOwnChess(Position begin, Position end, Figure[][] board, Figure current) {
         //simulate turn
         board[begin.getC()][begin.getR()] = Figure.EMPTY;
         final Figure endFigure = board[end.getC()][end.getR()];
@@ -28,13 +28,7 @@ public interface VerifyMode {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 Figure figure = board[i][j];
-                if (!figure.getColor().equals(ChessColor.EMPTY)
-                        && figure.isOppositeColor(current)
-                        ) {
-                    if (figure.equals(Figure.LBF)) {
-                        System.out.println("L here");
-                    }
-
+                if (!figure.getColor().equals(ChessColor.EMPTY) && figure.isOppositeColor(current)) {
                     final List<Position> positions = figure.getMoveStrategy().getVerifyMode()
                             .possibleFields(figure, new Position(i, j), board);
                     final List<Figure> figures = positions

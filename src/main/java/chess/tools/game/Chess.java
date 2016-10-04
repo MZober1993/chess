@@ -6,6 +6,7 @@ import chess.tools.move.Position;
 import java.io.Console;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Chess {
 
@@ -15,6 +16,7 @@ public class Chess {
     private CommandParser parser = new CommandParser();
     private boolean checkmate = false;
     private List<Boolean> turnValids = new ArrayList<>();
+    private List<Boolean> chessStates = new ArrayList<>();
 
     public static final PositionMapping MAPPING = new PositionMapping();
 
@@ -43,6 +45,28 @@ public class Chess {
 
     private void calculateCheckMate() {
 
+    }
+
+
+    private boolean verifyChessState(Figure[][] board, ChessColor color) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                Figure figure = board[i][j];
+                if (!figure.getColor().equals(ChessColor.EMPTY) && figure.getColor().equals(color)) {
+                    final List<Position> positions = figure.getMoveStrategy().getVerifyMode()
+                            .possibleFields(figure, new Position(i, j), board);
+                    final List<Figure> figures = positions
+                            .stream().map(pos -> Figure.figureForPos(board, pos)).collect(Collectors.toList());
+                    System.out.println(figure.getColor() + " " + figure + " found figures = " + figures);
+                    System.out.println();
+                    if (figures.stream().anyMatch(f -> f.equals(color.oppositColor().king()))) {
+                        System.out.println("Chess for color: " + color.oppositColor());
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public Figure[][] initialize() {
@@ -84,6 +108,7 @@ public class Chess {
             board[begin.getC()][begin.getR()] = Figure.EMPTY;
             System.out.println("Move done");
             turnValids.add(true);
+            chessStates.add(verifyChessState(board, oldBegin.getColor()));
         } else {
             System.out.println("Please try again!");
             turnValids.add(false);
@@ -129,5 +154,9 @@ public class Chess {
 
     public List<Boolean> getTurnValids() {
         return turnValids;
+    }
+
+    public List<Boolean> getChessStates() {
+        return chessStates;
     }
 }
