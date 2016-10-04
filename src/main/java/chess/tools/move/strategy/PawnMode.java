@@ -22,12 +22,11 @@ public class PawnMode implements VerifyMode {
         List<Position> possibleFields = new ArrayList<>();
         for (Direction dir : directions) {
             final Position newPos = new Position(begin.getC() + dir.getC(), begin.getR() + dir.getR());
-            // System.out.println("newPos = " + newPos);
-            if (newPos.isValid()) {
+
+            if (newPos.isValid() && !possibleFields.contains(newPos)) {
                 final Figure newFigure = Figure.figureForPos(board, newPos);
-                //System.out.println("newFigure = " + newFigure + ", pos: " + newPos);
                 if (dir.isAttackingMode()) {
-                    if (current.isOppositeColor(newFigure)) {
+                    if (current.isOppositeColor(newFigure) && !newFigure.equals(Figure.EMPTY)) {
                         possibleFields.add(newPos);
                     }
                 } else {
@@ -35,7 +34,6 @@ public class PawnMode implements VerifyMode {
                         possibleFields.add(newPos);
                     }
                 }
-
             }
         }
         System.out.println(possibleFields.stream().map(pos -> Chess.MAPPING.getCommandMapping().get(pos))

@@ -26,10 +26,8 @@ public class DefaultMode implements VerifyMode {
         for (Direction dir : directions) {
             for (int i = 1; i < endOffset; i++) {
                 final Position newPos = new Position(begin.getC() + i * dir.getC(), begin.getR() + i * dir.getR());
-                //System.out.println("newPos = " + newPos);
-                if (newPos.isValid()) {
+                if (newPos.isValid() && !possibleFields.contains(newPos)) {
                     final Figure newFigure = Figure.figureForPos(board, newPos);
-                    //System.out.println("newFigure = " + newFigure + ", pos: " + newPos);
                     if (newFigure.equals(Figure.EMPTY)) {
                         possibleFields.add(newPos);
                     } else if (current.isOppositeColor(newFigure)) {
@@ -43,8 +41,6 @@ public class DefaultMode implements VerifyMode {
         }
         System.out.println(possibleFields.stream().map(pos -> Chess.MAPPING.getCommandMapping().get(pos))
                 .collect(Collectors.toList()));
-
-        //System.out.println("possibleFields = " + possibleFields);
         return possibleFields;
     }
 }

@@ -24,4 +24,15 @@ public class PositionMapping {
     public Map<Position, String> getCommandMapping() {
         return commandMapping;
     }
+
+
+    public Position calcPosition(int index) {
+        final int i = index / 8;
+        final int j = index % 8;
+        return new Position(j, i);
+    }
+
+    public String calcCommand(int index) {
+        return commandMapping.get(calcPosition(index));
+    }
 }

@@ -12,10 +12,6 @@ public class Position {
         valid = !(j > 7 || i > 7);
     }
 
-    Position(Position position) {
-        this(position.getC(), position.getR());
-    }
-
     public int getR() {
         return j;
     }

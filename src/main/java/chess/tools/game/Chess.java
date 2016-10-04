@@ -4,6 +4,7 @@ import chess.tools.move.MoveTuple;
 import chess.tools.move.Position;
 
 import java.io.Console;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Chess {
@@ -13,6 +14,8 @@ public class Chess {
     private Console console = System.console();
     private CommandParser parser = new CommandParser();
     private boolean checkmate = false;
+    private List<Boolean> turnValids = new ArrayList<>();
+
     public static final PositionMapping MAPPING = new PositionMapping();
 
     public Chess(boolean gameModeOn) {
@@ -60,6 +63,7 @@ public class Chess {
     private void turn(String term) {
         MoveTuple move = parser.parse(term);
         if (!move.isPossible()) {
+            turnValids.add(false);
             System.out.println("Please choose an other move, this one is not possible.");
         } else {
             System.out.println(move.getBegin());
@@ -79,8 +83,10 @@ public class Chess {
             board[end.getC()][end.getR()] = oldBegin;
             board[begin.getC()][begin.getR()] = Figure.EMPTY;
             System.out.println("Move done");
+            turnValids.add(true);
         } else {
             System.out.println("Please try again!");
+            turnValids.add(false);
         }
     }
 
@@ -91,6 +97,7 @@ public class Chess {
             System.out.println("Please choose an other move, this one is not possible.");
             command = console.readLine(INFO_ABOUT_TURN);
             move = parser.parse(command);
+            turnValids.add(false);
         }
         doMove(move);
     }
@@ -120,10 +127,7 @@ public class Chess {
         return board;
     }
 
-
-    public Position calcPosition(int index) {
-        final int i = index / 8;
-        final int j = index % 8;
-        return new Position(j, i);
+    public List<Boolean> getTurnValids() {
+        return turnValids;
     }
 }
