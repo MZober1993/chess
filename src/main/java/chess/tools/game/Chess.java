@@ -17,6 +17,8 @@ public class Chess {
     private boolean checkmate = false;
     private List<Boolean> turnValids = new ArrayList<>();
     private List<Boolean> chessStates = new ArrayList<>();
+    private List<EatTuple> eatTuples = new ArrayList<>();
+    private int turnCounter = 0;
 
     public static final PositionMapping MAPPING = new PositionMapping();
 
@@ -120,6 +122,10 @@ public class Chess {
             final boolean chessOrNot = verifyChessState(board, oldBegin.getColor());
             chessStates.add(chessOrNot);
             turnValids.add(true);
+            this.turnCounter++;
+            if (!oldEnd.equals(Figure.EMPTY)) {
+                eatTuples.add(new EatTuple(oldBegin, oldEnd, turnCounter));
+            }
             return chessOrNot;
         } else {
             System.out.println("Please try again!");
@@ -171,5 +177,9 @@ public class Chess {
 
     public List<Boolean> getChessStates() {
         return chessStates;
+    }
+
+    public List<EatTuple> getEatTuples() {
+        return eatTuples;
     }
 }
