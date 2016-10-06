@@ -51,7 +51,7 @@ public class Chess {
 
 
     private boolean verifyChessState(Figure[][] board, ChessColor color) {
-        for (Figure figure : color.allFromColor()) {
+        for (Figure figure : color.getAllFromColor()) {
             final List<Position> positions = figure.getMoveStrategy().getVerifyMode()
                     .possibleFields(figure, board);
             final List<Figure> figures = positions
@@ -67,10 +67,13 @@ public class Chess {
     }
 
     public Figure[][] initialize() {
-        final List<Figure> blackCoreLine = ChessColor.BLACK.allWithoutPawn();
-        final List<Figure> blackPawnLine = ChessColor.BLACK.allPawns();
-        final List<Figure> whiteCoreLine = ChessColor.WHITE.allWithoutPawn();
-        final List<Figure> whitePawnLine = ChessColor.WHITE.allPawns();
+        ChessColor.BLACK.initFigureLists();
+        ChessColor.WHITE.initFigureLists();
+        ChessColor.EMPTY.initFigureLists();
+        final List<Figure> blackCoreLine = ChessColor.BLACK.getAllWithoutPawn();
+        final List<Figure> blackPawnLine = ChessColor.BLACK.getAllPawns();
+        final List<Figure> whiteCoreLine = ChessColor.WHITE.getAllWithoutPawn();
+        final List<Figure> whitePawnLine = ChessColor.WHITE.getAllPawns();
         for (int j = 0; j < 8; j++) {
             initFigure(0, j, blackCoreLine.get(j));
             initFigure(1, j, blackPawnLine.get(j));

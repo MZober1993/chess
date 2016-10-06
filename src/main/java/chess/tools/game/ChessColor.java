@@ -1,6 +1,7 @@
 package chess.tools.game;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,23 +10,32 @@ public enum ChessColor {
     BLACK(Color.darkGray), WHITE(Color.lightGray), EMPTY(Color.gray);
 
     private Color color;
+    private List<Figure> allPawns = new ArrayList<>();
+    private List<Figure> allWithoutPawn = new ArrayList<>();
+    private List<Figure> allFromColor = new ArrayList<>();
 
     ChessColor(Color color) {
         this.color = color;
     }
 
-    public List<Figure> allFromColor() {
-        return Arrays.stream(Figure.values()).filter(f -> f.getColor().equals(this))
-                .collect(Collectors.toList());
+    public List<Figure> getAllPawns() {
+        return allPawns;
     }
 
-    public List<Figure> allWithoutPawn() {
-        return Arrays.stream(Figure.values()).filter(f -> f.getColor().equals(this) && f.getTerm() != 'B')
-                .collect(Collectors.toList());
+    public List<Figure> getAllWithoutPawn() {
+        return allWithoutPawn;
     }
 
-    public List<Figure> allPawns() {
-        return Arrays.stream(Figure.values()).filter(f -> f.getColor().equals(this) && f.getTerm() == 'B')
+    public List<Figure> getAllFromColor() {
+        return allFromColor;
+    }
+
+    public void initFigureLists() {
+        allPawns = Arrays.stream(Figure.values()).filter(f -> f.getColor().equals(this) && f.getTerm() == 'B')
+                .collect(Collectors.toList());
+        allFromColor = Arrays.stream(Figure.values()).filter(f -> f.getColor().equals(this))
+                .collect(Collectors.toList());
+        allWithoutPawn = Arrays.stream(Figure.values()).filter(f -> f.getColor().equals(this) && f.getTerm() != 'B')
                 .collect(Collectors.toList());
     }
 
