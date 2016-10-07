@@ -110,4 +110,5 @@ public enum Figure {
     public List<Position> possibleFields(Figure[][] board) {
         return getMoveStrategy().getVerifyMode().possibleFields(this, board);
     }
+
 }

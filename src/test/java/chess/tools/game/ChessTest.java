@@ -11,8 +11,8 @@ public class ChessTest {
 
     @Test
     public void ownChessCheckSucceeds() {
-        Chess chess = new Chess(Arrays.asList("e2 e3", "e7 e6", "e3 e4", "f8 b4", "d2 d3", "d3 d4"));
-        Assert.assertEquals(Arrays.asList(true, true, true, true, false, false), chess.getTurnValids());
+        Chess chess = new Chess(Arrays.asList("e2 e3", "e7 e6", "e3 e4", "f8 b4", "d2 d3"));
+        Assert.assertEquals(Arrays.asList(true, true, true, true, false), chess.getTurnValids());
     }
 
     @Test

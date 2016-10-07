@@ -7,15 +7,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public enum ChessColor {
-    BLACK(Color.darkGray), WHITE(Color.lightGray), EMPTY(Color.gray);
+    BLACK(Color.darkGray, 1), WHITE(Color.lightGray, 0), EMPTY(Color.gray, 2);
 
     private Color color;
+    private int turnNumber;
     private List<Figure> allPawns = new ArrayList<>();
     private List<Figure> allWithoutPawn = new ArrayList<>();
     private List<Figure> allFromColor = new ArrayList<>();
 
-    ChessColor(Color color) {
+    ChessColor(Color color, int turnNumber) {
         this.color = color;
+        this.turnNumber = turnNumber;
+    }
+
+    public boolean validateTurn(int turn) {
+        final int i = turn % 2;
+        return i == turnNumber;
     }
 
     public List<Figure> getAllPawns() {

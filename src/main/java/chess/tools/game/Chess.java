@@ -60,8 +60,10 @@ public class Chess {
                     .stream().map(pos -> Figure.figureForPos(board, pos)).collect(Collectors.toList());
             System.out.println(figure.getColor() + " " + figure + " found figures = " + figures);
             System.out.println();
-            if (figures.stream().anyMatch(f -> f.equals(color.oppositColor().king()))) {
-                System.out.println("Chess for color: " + color.oppositColor());
+            final List<Figure> chessSources = figures.stream().filter(f -> f.equals(color.oppositColor().king()))
+                    .collect(Collectors.toList());
+            if (!chessSources.isEmpty()) {
+                System.out.println("Chess for color: " + color.oppositColor() + " from: " + chessSources);
                 return true;
             }
         }
@@ -93,47 +95,6 @@ public class Chess {
         figure.setPosition(new Position(i, j));
     }
 
-    private boolean turn(String term) {
-        MoveTuple move = parser.parse(term);
-        if (!move.isPossible()) {
-            turnValids.add(false);
-            System.out.println("Please choose an other move, this one is not possible.");
-        } else {
-            System.out.println(move.getBegin());
-            System.out.println("Move:" + MAPPING.getCommandMapping().get(move.getBegin()) + ","
-                    + MAPPING.getCommandMapping().get(move.getEnd()));
-            return doMove(move);
-        }
-        return false;
-    }
-
-    private boolean doMove(MoveTuple move) {
-        System.out.println(move);
-        final Position begin = move.getBegin();
-        final Position end = move.getEnd();
-        Figure oldBegin = board[begin.getC()][begin.getR()];
-        if (oldBegin.verifyMove(begin, end, board)) {
-            Figure oldEnd = board[end.getC()][end.getR()];
-            board[end.getC()][end.getR()] = oldBegin;
-            board[begin.getC()][begin.getR()] = Figure.EMPTY;
-            System.out.println("Move done");
-
-            oldBegin.setPosition(end);
-            final boolean chessOrNot = verifyChessState(board, oldBegin.getColor());
-            chessStates.add(chessOrNot);
-            turnValids.add(true);
-            this.turnCounter++;
-            if (!oldEnd.equals(Figure.EMPTY)) {
-                eatTuples.add(new EatTuple(oldBegin, oldEnd, turnCounter));
-            }
-            return chessOrNot;
-        } else {
-            System.out.println("Please try again!");
-            turnValids.add(false);
-        }
-        return false;
-    }
-
     public boolean turn() {
         String command = console.readLine(INFO_ABOUT_TURN);
         MoveTuple move = parser.parse(command);
@@ -143,7 +104,61 @@ public class Chess {
             move = parser.parse(command);
             turnValids.add(false);
         }
-        return doMove(move);
+        return validateColorDoMove(move);
+    }
+
+    private boolean turn(String term) {
+        MoveTuple move = parser.parse(term);
+        if (!move.isPossible()) {
+            turnValids.add(false);
+            System.out.println("Please choose an other move, this one is not possible.");
+        } else {
+            return validateColorDoMove(move);
+        }
+        return false;
+    }
+
+    private boolean validateColorDoMove(MoveTuple move) {
+        if (move.rightColor(board, turnCounter)) {
+            System.out.println(move.getBegin());
+            System.out.println("Move:" + MAPPING.getCommandMapping().get(move.getBegin()) + ","
+                    + MAPPING.getCommandMapping().get(move.getEnd()));
+            return doMove(move);
+        } else {
+            System.out.println("Not your turn!");
+            return false;
+        }
+    }
+
+    private boolean doMove(MoveTuple move) {
+        System.out.println(move);
+        final Position begin = move.getBegin();
+        final Position end = move.getEnd();
+        Figure oldBegin = board[begin.getC()][begin.getR()];
+        if (oldBegin.verifyMove(begin, end, board)) {
+            return makePossibleMove(begin, end, oldBegin);
+        } else {
+            System.out.println("Please try again!");
+            turnValids.add(false);
+        }
+        return false;
+    }
+
+    private boolean makePossibleMove(Position begin, Position end, Figure oldBegin) {
+        Figure oldEnd = board[end.getC()][end.getR()];
+        board[end.getC()][end.getR()] = oldBegin;
+        board[begin.getC()][begin.getR()] = Figure.EMPTY;
+        System.out.println("Move done");
+
+        oldBegin.setPosition(end);
+        final boolean chessOrNot = verifyChessState(board, oldBegin.getColor());
+        chessStates.add(chessOrNot);
+        turnValids.add(true);
+        this.turnCounter++;
+        if (!oldEnd.equals(Figure.EMPTY)) {
+            eatTuples.add(new EatTuple(oldBegin, oldEnd, turnCounter));
+        }
+        return chessOrNot;
     }
 
     public boolean isCheckMate() {

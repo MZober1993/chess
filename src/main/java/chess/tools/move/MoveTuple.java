@@ -1,5 +1,7 @@
 package chess.tools.move;
 
+import chess.tools.game.Figure;
+
 public class MoveTuple {
     private final Position begin;
     private final Position end;
@@ -22,6 +24,11 @@ public class MoveTuple {
 
     public boolean isPossible() {
         return possible;
+    }
+
+    public boolean rightColor(Figure[][] board, int turnCounter) {
+        Figure oldBegin = board[begin.getC()][begin.getR()];
+        return oldBegin.getColor().validateTurn(turnCounter);
     }
 
     @Override
