@@ -19,7 +19,7 @@ but the interesting part is the implementation of the game itself.
 - stalement check
 - add a simple ai, that try to move figures
 - add a decision-tree to realize a better ai
-- optimize the decision-tree (and add a harder ki)
+- optimize the decision-tree (and add a harder ai)
 
 ### Try it!
 
