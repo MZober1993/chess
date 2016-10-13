@@ -32,11 +32,28 @@ public class MoveTuple {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MoveTuple moveTuple = (MoveTuple) o;
+
+        return possible == moveTuple.possible && begin.equals(moveTuple.begin) && end.equals(moveTuple.end);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = begin.hashCode();
+        result = 31 * result + end.hashCode();
+        result = 31 * result + (possible ? 1 : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
-        return "MoveTuple{" +
-                "begin=" + begin +
-                ", end=" + end +
-                ", possible=" + possible +
-                '}';
+        return "(" + begin +
+                ")->(" + end +
+                ")";
     }
 }

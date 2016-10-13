@@ -1,11 +1,15 @@
 package chess.tools.game;
 
+import chess.tools.move.MoveTuple;
+import chess.tools.move.Position;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ChessTest {
 
@@ -48,5 +52,23 @@ public class ChessTest {
     public void turnSucceeds() {
         Chess chess = new Chess(Collections.singletonList("e2 e3"));
         Assert.assertEquals(Collections.singletonList(true), chess.getTurnValids());
+    }
+
+    @Test
+    public void noChessMateSucceeds() {
+        Chess chess = new Chess(Arrays.asList("e2 e3", "d7 d6", "d1 h5", "b8 c6", "f1 c4", "a7 a6", "h5 f7"));
+        Assert.assertEquals(Stream.of(new EatTuple(Figure.DW, Figure.BBF, 7)).collect(Collectors.toList())
+                , chess.getEatTuples());
+        Assert.assertFalse(chess.isCheckMate());
+        final MoveTuple lastNoCheckMateMove = chess.getLastCheckMateCalculator().getLastNoCheckMateMove();
+        Assert.assertEquals(new MoveTuple(new Position(0, 4), new Position(1, 3), true), lastNoCheckMateMove);
+    }
+
+    @Test
+    public void chessMateSucceeds() {
+        Chess chess = new Chess(Arrays.asList("e2 e3", "b7 b6", "d1 h5", "b8 c6", "f1 c4", "a7 a6", "h5 f7"));
+        Assert.assertEquals(Stream.of(new EatTuple(Figure.DW, Figure.BBF, 7)).collect(Collectors.toList())
+                , chess.getEatTuples());
+        Assert.assertTrue(chess.isCheckMate());
     }
 }

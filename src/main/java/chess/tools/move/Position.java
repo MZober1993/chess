@@ -56,6 +56,6 @@ public class Position {
 
     @Override
     public String toString() {
-        return "[i:" + i + ",j:" + j + ",id:" + index + "]";
+        return "[i:" + i + ",j:" + j + "]";
     }
 }

@@ -14,6 +14,7 @@ public enum ChessColor {
     private List<Figure> allPawns = new ArrayList<>();
     private List<Figure> allWithoutPawn = new ArrayList<>();
     private List<Figure> allFromColor = new ArrayList<>();
+    private List<Figure> allWithoutKing = new ArrayList<>();
 
     ChessColor(Color color, int turnNumber) {
         this.color = color;
@@ -37,12 +38,22 @@ public enum ChessColor {
         return allFromColor;
     }
 
+    public List<Figure> getAllWithoutKing() {
+        return allWithoutKing;
+    }
+
+    public List<Figure> calcNotEaten() {
+        return getAllFromColor().stream().filter(figure -> !figure.isEaten()).collect(Collectors.toList());
+    }
+
     public void initFigureLists() {
-        allPawns = Arrays.stream(Figure.values()).filter(f -> f.getColor().equals(this) && f.getTerm() == 'B')
-                .collect(Collectors.toList());
         allFromColor = Arrays.stream(Figure.values()).filter(f -> f.getColor().equals(this))
                 .collect(Collectors.toList());
-        allWithoutPawn = Arrays.stream(Figure.values()).filter(f -> f.getColor().equals(this) && f.getTerm() != 'B')
+        allPawns = allFromColor.stream().filter(f -> f.getTerm() == 'B')
+                .collect(Collectors.toList());
+        allWithoutPawn = allFromColor.stream().filter(f -> f.getTerm() != 'B')
+                .collect(Collectors.toList());
+        allWithoutKing = allFromColor.stream().filter(f -> f.getTerm() != 'K')
                 .collect(Collectors.toList());
     }
 

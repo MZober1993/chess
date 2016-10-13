@@ -1,6 +1,5 @@
 package chess.tools.game;
 
-import chess.tools.game.gui.FigureLabel;
 import chess.tools.move.Position;
 import chess.tools.move.strategy.MoveStrategy;
 
@@ -45,8 +44,8 @@ public enum Figure {
     private final ChessColor color;
     private final MoveStrategy moveStrategy;
     private final char term;
-    private FigureLabel figureLabel;
     private Position position = new Position(0, 0);
+    private boolean eaten = false;
 
     Figure(ChessColor color, MoveStrategy moveStrategy) {
         if (color.equals(ChessColor.EMPTY)) {
@@ -87,16 +86,8 @@ public enum Figure {
         return String.valueOf(term);
     }
 
-    public FigureLabel calcFigureLabel(int i) {
-        this.figureLabel = new FigureLabel(String.valueOf(getTerm()), this.getColor());
-        figureLabel.setFigure(this);
-        figureLabel.setIndex(i);
-        setPosition(new Position(i));
-        return figureLabel;
-    }
-
-    public FigureLabel getFigureLabel() {
-        return figureLabel;
+    public String moreInfoString() {
+        return color + " " + toString();
     }
 
     public Position getPosition() {
@@ -111,4 +102,11 @@ public enum Figure {
         return getMoveStrategy().getVerifyMode().possibleFields(this, board);
     }
 
+    public boolean isEaten() {
+        return eaten;
+    }
+
+    public void setEaten(boolean eaten) {
+        this.eaten = eaten;
+    }
 }

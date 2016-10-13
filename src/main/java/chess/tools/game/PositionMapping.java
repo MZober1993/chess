@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class PositionMapping {
     private Map<Position, String> commandMapping = new HashMap<>();
@@ -25,6 +26,9 @@ public class PositionMapping {
         return commandMapping;
     }
 
+    public void printList(List<Position> positions) {
+        System.out.println("positions: " + positions.stream().map(pos -> commandMapping.get(pos)).collect(Collectors.toList()));
+    }
 
     public Position calcPosition(int index) {
         final int i = index / 8;

@@ -21,54 +21,53 @@ public class Chess {
     private int turnCounter = 0;
 
     public static final PositionMapping MAPPING = new PositionMapping();
+    private CheckMateCalculator calculator;
 
     public Chess(boolean gameModeOn) {
         initialize();
 
-        System.out.println(boardToString());
+        System.out.println(boardToString(board));
         if (gameModeOn) {
             do {
                 if (turn()) {
                     calculateCheckMate();
+                    printChessMateState();
                 }
-                System.out.println(boardToString());
+                System.out.println(boardToString(board));
             } while (!isCheckMate());
+        }
+    }
+
+    private void printChessMateState() {
+        if (checkmate) {
+            System.out.println("--------- check-mate ----------");
+        } else {
+            System.out.println("no check-mate, move: " + calculator.getLastNoCheckMateFigure() + ": " + calculator.getLastNoCheckMateMove() + " possible!");
         }
     }
 
     public Chess(List<String> terms) {
         initialize();
         terms.forEach(term -> {
-            System.out.println(boardToString());
+            System.out.println(boardToString(board));
             if (turn(term)) {
                 calculateCheckMate();
+                printChessMateState();
             }
         });
-        System.out.println(boardToString());
+        System.out.println(boardToString(board));
     }
 
     private void calculateCheckMate() {
-
+        final ChessColor defenderColor = colorOnTurn();
+        final List<Position> forbiddenFields = defenderColor.oppositColor().getAllFromColor().stream()
+                .flatMap(figure -> figure.possibleFields(board).stream()).collect(Collectors.toList());
+        System.out.println("forbiddenFields = " + forbiddenFields.stream().map(pos -> MAPPING.getCommandMapping().get(pos)).collect(Collectors.toList()));
+        System.out.println(boardToString(board));
+        calculator = new CheckMateCalculator(defenderColor, forbiddenFields, board);
+        checkmate = calculator.validate();
     }
 
-
-    private boolean verifyChessState(Figure[][] board, ChessColor color) {
-        for (Figure figure : color.getAllFromColor()) {
-            final List<Position> positions = figure.getMoveStrategy().getVerifyMode()
-                    .possibleFields(figure, board);
-            final List<Figure> figures = positions
-                    .stream().map(pos -> Figure.figureForPos(board, pos)).collect(Collectors.toList());
-            System.out.println(figure.getColor() + " " + figure + " found figures = " + figures);
-            System.out.println();
-            final List<Figure> chessSources = figures.stream().filter(f -> f.equals(color.oppositColor().king()))
-                    .collect(Collectors.toList());
-            if (!chessSources.isEmpty()) {
-                System.out.println("Chess for color: " + color.oppositColor() + " from: " + chessSources);
-                return true;
-            }
-        }
-        return false;
-    }
 
     public Figure[][] initialize() {
         ChessColor.BLACK.initFigureLists();
@@ -151,12 +150,13 @@ public class Chess {
         System.out.println("Move done");
 
         oldBegin.setPosition(end);
-        final boolean chessOrNot = verifyChessState(board, oldBegin.getColor());
+        final boolean chessOrNot = CheckMateCalculator.verifyChessState(board, oldBegin.getColor(), true);
         chessStates.add(chessOrNot);
         turnValids.add(true);
         this.turnCounter++;
         if (!oldEnd.equals(Figure.EMPTY)) {
             eatTuples.add(new EatTuple(oldBegin, oldEnd, turnCounter));
+            oldEnd.setEaten(true);
         }
         return chessOrNot;
     }
@@ -165,7 +165,7 @@ public class Chess {
         return checkmate;
     }
 
-    public String boardToString() {
+    public static String boardToString(Figure[][] board) {
         String result = "";
         int line = 0;
         final String column = "\ta\tb\tc\td\te\tf\tg\th\n";
@@ -182,6 +182,16 @@ public class Chess {
         return result;
     }
 
+    public static void printBoard(Figure[][] board) {
+        System.out.println(boardToString(board));
+    }
+
+    public ChessColor colorOnTurn() {
+        final int i = turnCounter % 2;
+        return i == 0 ? ChessColor.WHITE : i == 1
+                ? ChessColor.BLACK : ChessColor.EMPTY;
+    }
+
     public Figure[][] getBoard() {
         return board;
     }
@@ -196,5 +206,9 @@ public class Chess {
 
     public List<EatTuple> getEatTuples() {
         return eatTuples;
+    }
+
+    public CheckMateCalculator getLastCheckMateCalculator() {
+        return this.calculator;
     }
 }

@@ -26,6 +26,27 @@ public class EatTuple {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        EatTuple eatTuple = (EatTuple) o;
+
+        if (turnCount != eatTuple.turnCount) return false;
+        if (attacker != eatTuple.attacker) return false;
+        return loser == eatTuple.loser;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = attacker != null ? attacker.hashCode() : 0;
+        result = 31 * result + (loser != null ? loser.hashCode() : 0);
+        result = 31 * result + turnCount;
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "EatTuple{" +
                 "attacker=" + attacker +

@@ -1,13 +1,11 @@
 package chess.tools.move.strategy;
 
-import chess.tools.game.Chess;
 import chess.tools.game.Figure;
 import chess.tools.move.Direction;
 import chess.tools.move.Position;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class DefaultMode implements VerifyMode {
 
@@ -40,8 +38,6 @@ public class DefaultMode implements VerifyMode {
                 }
             }
         }
-        System.out.println(possibleFields.stream().map(pos -> Chess.MAPPING.getCommandMapping().get(pos))
-                .collect(Collectors.toList()));
         return possibleFields;
     }
 }
