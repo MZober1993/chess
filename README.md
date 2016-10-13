@@ -17,8 +17,8 @@ but the interesting part is the implementation of the game itself.
 
 ### ToDos:
 - stalement check
-- add a simple ki, that try to move figures
-- add a decision-tree to realize a better ki
+- add a simple ai, that try to move figures
+- add a decision-tree to realize a better ai
 - optimize the decision-tree (and add a harder ki)
 
 ### Try it!
