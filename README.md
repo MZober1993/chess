@@ -13,9 +13,10 @@ but the interesting part is the implementation of the game itself.
 - pre-calculation if the move is possible or not (color, move possible)
 - calculate the chess-state (1. after move and 2. move possible or chess?)
 - turn-counter and calculation which figure can move on each turn
+- check-mate check when chess
 
 ### ToDos:
-- chess-mate check when chess
+- stalement check
 - add a simple ki, that try to move figures
 - add a decision-tree to realize a better ki
 - optimize the decision-tree (and add a harder ki)
