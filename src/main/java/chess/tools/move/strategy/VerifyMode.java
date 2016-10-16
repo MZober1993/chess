@@ -23,7 +23,7 @@ public interface VerifyMode {
         final Figure endFigure = board[end.getC()][end.getR()];
         board[end.getC()][end.getR()] = current;
 
-        for (Figure figure : current.getColor().oppositColor().getAllFromColor()) {
+        for (Figure figure : current.getColor().oppositColor().calcNotEaten()) {
             final List<Position> positions = figure.getMoveStrategy().getVerifyMode()
                     .possibleFields(figure, board);
             final List<Figure> figures = positions

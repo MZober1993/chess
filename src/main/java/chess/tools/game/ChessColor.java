@@ -46,6 +46,10 @@ public enum ChessColor {
         return getAllFromColor().stream().filter(figure -> !figure.isEaten()).collect(Collectors.toList());
     }
 
+    public List<Figure> calcNotEatenWithoutKing() {
+        return getAllWithoutKing().stream().filter(figure -> !figure.isEaten()).collect(Collectors.toList());
+    }
+
     public void initFigureLists() {
         allFromColor = Arrays.stream(Figure.values()).filter(f -> f.getColor().equals(this))
                 .collect(Collectors.toList());

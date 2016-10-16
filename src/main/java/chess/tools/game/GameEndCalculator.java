@@ -8,20 +8,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class CheckMateCalculator {
-    private final ChessColor defenderColor;
-    private final List<Position> forbiddenFields;
-    private final Figure[][] board;
-    private final Figure king;
+public class GameEndCalculator {
+    private ChessColor defenderColor;
+    private List<Position> forbiddenFields;
+    private Figure[][] board;
+    private Figure king;
     private Figure oldFigureBeforeSimulation;
     private MoveTuple lastNoCheckMateMove = new MoveTuple(new Position(0, 0), new Position(0, 0), false);
-    private Figure lastNoCheckMateFigure = Figure.EMPTY;
+    private MoveTuple lastNoStalementMove = new MoveTuple(new Position(0, 0), new Position(0, 0), false);
     private List<Position> possibleKingMoves = new ArrayList<>();
 
-    public CheckMateCalculator(ChessColor defenderColor, List<Position> forbiddenFields, Figure[][] board) {
+    public void changeState(ChessColor defenderColor, Figure[][] board) {
         this.defenderColor = defenderColor;
         this.king = defenderColor.king();
-        this.forbiddenFields = forbiddenFields;
+        this.forbiddenFields = defenderColor.oppositColor().calcNotEaten().stream()
+                .flatMap(figure -> figure.possibleFields(board).stream()).collect(Collectors.toList());
         this.board = board;
     }
 
@@ -30,7 +31,7 @@ public class CheckMateCalculator {
      *
      * @return checkmate
      */
-    public boolean validate() {
+    public boolean validateCheckMate() {
         if (kingMoveWithoutAttackingPossible()) {
             setLastNoCheckMate(king, king.getPosition(), possibleKingMoves.get(0));
             return false;
@@ -54,9 +55,35 @@ public class CheckMateCalculator {
         return true;
     }
 
-    private void setLastNoCheckMate(Figure figure, Position begin, Position end) {
-        this.lastNoCheckMateMove = new MoveTuple(begin, end, true);
-        this.lastNoCheckMateFigure = figure;
+    /**
+     * Validate the stalement state
+     *
+     * @return checkmate
+     */
+    public boolean validateStalement() {
+        if (!defenderColor.calcNotEatenWithoutKing().stream().flatMap(fig -> fig.possibleFields(board).stream())
+                .collect(Collectors.toList()).isEmpty()) {
+            return false;
+        }
+        //TODO: add further stalement conditions
+        if (kingMoveWithoutAttackingPossible()) {
+            setLastNoStalement(king, king.getPosition(), possibleKingMoves.get(0));
+            return false;
+        } else {
+            final List<Position> positions = king.possibleFields(board);
+            for (Position pos : positions) {
+                final Position oldPosition = king.getPosition();
+                System.out.println("simulate for: " + king.getColor() + " " + king + " on " + Chess.MAPPING.getCommandMapping().get(pos));
+                simulateMove(king, pos);
+                if (!verifyChessState(board, defenderColor.oppositColor(), false)) {
+                    undoSimulation(king, pos);
+                    setLastNoStalement(king, oldPosition, pos);
+                    return false;
+                }
+                undoSimulation(king, pos);
+            }
+        }
+        return true;
     }
 
     private void simulateMove(Figure figure, Position position) {
@@ -90,7 +117,7 @@ public class CheckMateCalculator {
      * @return chess?
      */
     public static boolean verifyChessState(Figure[][] board, ChessColor color, boolean loggingMessages) {
-        for (Figure figure : color.getAllFromColor()) {
+        for (Figure figure : color.calcNotEaten()) {
             final List<Position> positions = figure.getMoveStrategy().getVerifyMode()
                     .possibleFields(figure, board);
             final List<Figure> figures = positions
@@ -119,11 +146,22 @@ public class CheckMateCalculator {
         return board;
     }
 
+
     public MoveTuple getLastNoCheckMateMove() {
         return lastNoCheckMateMove;
     }
 
-    public Figure getLastNoCheckMateFigure() {
-        return lastNoCheckMateFigure;
+    private void setLastNoCheckMate(Figure figure, Position begin, Position end) {
+        this.lastNoCheckMateMove = new MoveTuple(begin, end, true);
+        lastNoCheckMateMove.setFigure(figure);
+    }
+
+    public MoveTuple getLastNoStalementMove() {
+        return lastNoStalementMove;
+    }
+
+    private void setLastNoStalement(Figure figure, Position begin, Position end) {
+        this.lastNoStalementMove = new MoveTuple(begin, end, true);
+        lastNoStalementMove.setFigure(figure);
     }
 }

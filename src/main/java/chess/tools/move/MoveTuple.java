@@ -6,6 +6,7 @@ public class MoveTuple {
     private final Position begin;
     private final Position end;
     private final boolean possible;
+    private Figure figure = Figure.EMPTY;
 
     public MoveTuple(Position begin, Position end, boolean possible) {
 
@@ -24,6 +25,14 @@ public class MoveTuple {
 
     public boolean isPossible() {
         return possible;
+    }
+
+    public Figure getFigure() {
+        return figure;
+    }
+
+    public void setFigure(Figure figure) {
+        this.figure = figure;
     }
 
     public boolean rightColor(Figure[][] board, int turnCounter) {

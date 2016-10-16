@@ -6,7 +6,6 @@ import chess.tools.move.Position;
 import java.io.Console;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Chess {
 
@@ -15,13 +14,14 @@ public class Chess {
     private Console console = System.console();
     private CommandParser parser = new CommandParser();
     private boolean checkmate = false;
+    private boolean stalement = false;
     private List<Boolean> turnValids = new ArrayList<>();
     private List<Boolean> chessStates = new ArrayList<>();
     private List<EatTuple> eatTuples = new ArrayList<>();
+    private final GameEndCalculator endCalculator = new GameEndCalculator();
     private int turnCounter = 0;
 
     public static final PositionMapping MAPPING = new PositionMapping();
-    private CheckMateCalculator calculator;
 
     public Chess(boolean gameModeOn) {
         initialize();
@@ -29,12 +29,18 @@ public class Chess {
         System.out.println(boardToString(board));
         if (gameModeOn) {
             do {
-                if (turn()) {
+                if (turnCounter > 10) {
+                    endCalculator.changeState(colorOnTurn(), board);
+                    if (endCalculator.validateStalement()) {
+                        stalement = true;
+                    }
+                }
+                if (turn() && !stalement) {
                     calculateCheckMate();
                     printChessMateState();
                 }
                 System.out.println(boardToString(board));
-            } while (!isCheckMate());
+            } while (!isCheckMate() && !isStalement());
         }
     }
 
@@ -42,7 +48,7 @@ public class Chess {
         if (checkmate) {
             System.out.println("--------- check-mate ----------");
         } else {
-            System.out.println("no check-mate, move: " + calculator.getLastNoCheckMateFigure() + ": " + calculator.getLastNoCheckMateMove() + " possible!");
+            System.out.println("no check-mate, move: " + endCalculator.getLastNoCheckMateMove().getFigure() + ": " + endCalculator.getLastNoCheckMateMove() + " possible!");
         }
     }
 
@@ -50,7 +56,13 @@ public class Chess {
         initialize();
         terms.forEach(term -> {
             System.out.println(boardToString(board));
-            if (turn(term)) {
+            if (turnCounter > 10) {
+                endCalculator.changeState(colorOnTurn(), board);
+                if (endCalculator.validateStalement()) {
+                    stalement = true;
+                }
+            }
+            if (turn(term) && !isStalement()) {
                 calculateCheckMate();
                 printChessMateState();
             }
@@ -60,12 +72,9 @@ public class Chess {
 
     private void calculateCheckMate() {
         final ChessColor defenderColor = colorOnTurn();
-        final List<Position> forbiddenFields = defenderColor.oppositColor().getAllFromColor().stream()
-                .flatMap(figure -> figure.possibleFields(board).stream()).collect(Collectors.toList());
-        System.out.println("forbiddenFields = " + forbiddenFields.stream().map(pos -> MAPPING.getCommandMapping().get(pos)).collect(Collectors.toList()));
         System.out.println(boardToString(board));
-        calculator = new CheckMateCalculator(defenderColor, forbiddenFields, board);
-        checkmate = calculator.validate();
+        endCalculator.changeState(defenderColor, board);
+        checkmate = endCalculator.validateCheckMate();
     }
 
 
@@ -150,7 +159,7 @@ public class Chess {
         System.out.println("Move done");
 
         oldBegin.setPosition(end);
-        final boolean chessOrNot = CheckMateCalculator.verifyChessState(board, oldBegin.getColor(), true);
+        final boolean chessOrNot = GameEndCalculator.verifyChessState(board, oldBegin.getColor(), true);
         chessStates.add(chessOrNot);
         turnValids.add(true);
         this.turnCounter++;
@@ -208,7 +217,14 @@ public class Chess {
         return eatTuples;
     }
 
-    public CheckMateCalculator getLastCheckMateCalculator() {
-        return this.calculator;
+    public GameEndCalculator getEndCalculator() {
+        return this.endCalculator;
+    }
+
+    public boolean isStalement() {
+        if (stalement) {
+            System.out.println("--------------- Patt ----------------");
+        }
+        return stalement;
     }
 }

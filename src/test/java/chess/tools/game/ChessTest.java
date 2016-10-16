@@ -60,7 +60,7 @@ public class ChessTest {
         Assert.assertEquals(Stream.of(new EatTuple(Figure.DW, Figure.BBF, 7)).collect(Collectors.toList())
                 , chess.getEatTuples());
         Assert.assertFalse(chess.isCheckMate());
-        final MoveTuple lastNoCheckMateMove = chess.getLastCheckMateCalculator().getLastNoCheckMateMove();
+        final MoveTuple lastNoCheckMateMove = chess.getEndCalculator().getLastNoCheckMateMove();
         Assert.assertEquals(new MoveTuple(new Position(0, 4), new Position(1, 3), true), lastNoCheckMateMove);
     }
 
@@ -70,5 +70,10 @@ public class ChessTest {
         Assert.assertEquals(Stream.of(new EatTuple(Figure.DW, Figure.BBF, 7)).collect(Collectors.toList())
                 , chess.getEatTuples());
         Assert.assertTrue(chess.isCheckMate());
+    }
+
+    @Test
+    public void stalementSucceeds() {
+        //TODO: add test
     }
 }
