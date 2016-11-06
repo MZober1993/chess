@@ -18,6 +18,7 @@ public class Chess {
     private List<Boolean> turnValids = new ArrayList<>();
     private List<Boolean> chessStates = new ArrayList<>();
     private List<EatTuple> eatTuples = new ArrayList<>();
+    private List<MoveTuple> moves = new ArrayList<>();
     private final GameEndCalculator endCalculator = new GameEndCalculator();
     private int turnCounter = 0;
 
@@ -37,14 +38,34 @@ public class Chess {
                 }
                 if (turn() && !stalement) {
                     calculateCheckMate();
-                    printChessMateState();
+                    printCheckMateState();
                 }
                 System.out.println(boardToString(board));
             } while (!isCheckMate() && !isStalement());
         }
     }
 
-    private void printChessMateState() {
+    /**
+     * @param move - a possible move
+     * @return valid or not
+     */
+    public boolean gameStep(MoveTuple move) {
+        final int sizeBefore = turnValids.size();
+        processMove(move);
+        printBoard();
+        return (turnValids.size() == sizeBefore + 1) && turnValids.get(turnValids.size() - 1);
+    }
+
+    public Figure figureOnBoard(Position position) {
+        return Figure.figureForPos(board, position);
+    }
+
+    public boolean colorValidation(Position begin) {
+        Figure oldBegin = board[begin.getC()][begin.getR()];
+        return oldBegin.getColor().validateTurn(turnCounter);
+    }
+
+    private void printCheckMateState() {
         if (checkmate) {
             System.out.println("--------- check-mate ----------");
         } else {
@@ -54,20 +75,34 @@ public class Chess {
 
     public Chess(List<String> terms) {
         initialize();
-        terms.forEach(term -> {
-            System.out.println(boardToString(board));
-            if (turnCounter > 10) {
-                endCalculator.changeState(colorOnTurn(), board);
-                if (endCalculator.validateStalement()) {
-                    stalement = true;
-                }
-            }
-            if (turn(term) && !isStalement()) {
-                calculateCheckMate();
-                printChessMateState();
-            }
-        });
+        terms.forEach(this::processTerm);
         System.out.println(boardToString(board));
+    }
+
+    public void processTerm(String term) {
+        endCalculatorChecks();
+        if (turn(term) && !isStalement()) {
+            calculateCheckMate();
+            printCheckMateState();
+        }
+    }
+
+    public void processMove(MoveTuple move) {
+        endCalculatorChecks();
+        if (turn(move) && !isStalement()) {
+            calculateCheckMate();
+            printCheckMateState();
+        }
+    }
+
+    private void endCalculatorChecks() {
+        System.out.println(boardToString(board));
+        if (turnCounter > 10) {
+            endCalculator.changeState(colorOnTurn(), board);
+            if (endCalculator.validateStalement()) {
+                stalement = true;
+            }
+        }
     }
 
     private void calculateCheckMate() {
@@ -117,6 +152,11 @@ public class Chess {
 
     private boolean turn(String term) {
         MoveTuple move = parser.parse(term);
+        return turn(move);
+    }
+
+    private boolean turn(MoveTuple move) {
+        moves.add(move);
         if (!move.isPossible()) {
             turnValids.add(false);
             System.out.println("Please choose an other move, this one is not possible.");
@@ -191,7 +231,7 @@ public class Chess {
         return result;
     }
 
-    public static void printBoard(Figure[][] board) {
+    public void printBoard() {
         System.out.println(boardToString(board));
     }
 
@@ -215,6 +255,10 @@ public class Chess {
 
     public List<EatTuple> getEatTuples() {
         return eatTuples;
+    }
+
+    public List<MoveTuple> getMoves() {
+        return moves;
     }
 
     public GameEndCalculator getEndCalculator() {

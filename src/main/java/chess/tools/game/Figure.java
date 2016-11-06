@@ -46,6 +46,7 @@ public enum Figure {
     private final char term;
     private Position position = new Position(0, 0);
     private boolean eaten = false;
+    private FigureLabel figureLabel;
 
     Figure(ChessColor color, MoveStrategy moveStrategy) {
         if (color.equals(ChessColor.EMPTY)) {
@@ -55,6 +56,7 @@ public enum Figure {
         }
         this.color = color;
         this.moveStrategy = moveStrategy;
+        this.figureLabel = new FigureLabel(this);
     }
 
     public ChessColor getColor() {
@@ -67,6 +69,10 @@ public enum Figure {
 
     public char getTerm() {
         return term;
+    }
+
+    public FigureLabel getFigureLabel() {
+        return this.figureLabel;
     }
 
     public boolean verifyMove(Position begin, Position end, Figure[][] board) {
