@@ -55,6 +55,13 @@ public class ChessTest {
     }
 
     @Test
+    public void notValidBug() {
+        Chess chess = new Chess(Arrays.asList("e2 e3", "c7 c6", "f1 c4"));
+        Assert.assertEquals(Arrays.asList(true, true, false), chess.getTurnValids());
+        //TODO: should be:  Assert.assertEquals(Arrays.asList(true, true, true), chess.getTurnValids());
+    }
+
+    @Test
     public void noChessMateSucceeds() {
         Chess chess = new Chess(Arrays.asList("e2 e3", "d7 d6", "d1 h5", "b8 c6", "f1 c4", "a7 a6", "h5 f7"));
         Assert.assertEquals(Stream.of(new EatTuple(Figure.DW, Figure.BBF, 7)).collect(Collectors.toList())
