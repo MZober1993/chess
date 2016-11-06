@@ -10,10 +10,10 @@ public class Direction {
     public static final List<Direction> TOWER = Stream.of(new Direction(1, 0), new Direction(-1, 0),
             new Direction(0, 1), new Direction(0, -1))
             .collect(Collectors.toList());
-    public static final List<Direction> BISCHOP = Stream.of(new Direction(1, 1), new Direction(-1, 1)
+    public static final List<Direction> BISHOP = Stream.of(new Direction(1, 1), new Direction(-1, 1)
             , new Direction(-1, -1), new Direction(1, -1))
             .collect(Collectors.toList());
-    public static final List<Direction> QUEEN = Stream.of(TOWER, BISCHOP).flatMap(Collection::stream)
+    public static final List<Direction> QUEEN = Stream.of(TOWER, BISHOP).flatMap(Collection::stream)
             .collect(Collectors.toList());
     public static final List<Direction> SPRINGER = Stream.of(new Direction(1, 2), new Direction(2, 1), new Direction(1, -2), new Direction(2, -1),
             new Direction(-1, 2), new Direction(-2, 1), new Direction(-1, -2), new Direction(-2, -1))

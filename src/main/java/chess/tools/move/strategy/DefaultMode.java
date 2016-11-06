@@ -24,6 +24,9 @@ public class DefaultMode implements VerifyMode {
         int endOffset = repeating ? 8 : 2;
         for (Direction dir : directions) {
             for (int i = 1; i < endOffset; i++) {
+                if (begin.getC() + i * dir.getC() < 0 || begin.getR() + i * dir.getR() < 0) {
+                    continue;
+                }
                 final Position newPos = new Position(begin.getC() + i * dir.getC(), begin.getR() + i * dir.getR());
                 if (newPos.isValid() && !possibleFields.contains(newPos)) {
                     final Figure newFigure = Figure.figureForPos(board, newPos);

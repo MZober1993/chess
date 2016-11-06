@@ -55,10 +55,9 @@ public class ChessTest {
     }
 
     @Test
-    public void notValidBug() {
+    public void noCheckMateBug() {
         Chess chess = new Chess(Arrays.asList("e2 e3", "c7 c6", "f1 c4"));
-        Assert.assertEquals(Arrays.asList(true, true, false), chess.getTurnValids());
-        //TODO: should be:  Assert.assertEquals(Arrays.asList(true, true, true), chess.getTurnValids());
+        Assert.assertEquals(Arrays.asList(true, true, true), chess.getTurnValids());
     }
 
     @Test
@@ -77,10 +76,5 @@ public class ChessTest {
         Assert.assertEquals(Stream.of(new EatTuple(Figure.DW, Figure.BBF, 7)).collect(Collectors.toList())
                 , chess.getEatTuples());
         Assert.assertTrue(chess.isCheckMate());
-    }
-
-    @Test
-    public void stalementSucceeds() {
-        //TODO: add test
     }
 }

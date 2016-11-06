@@ -13,7 +13,7 @@ public enum MoveStrategy {
     S(new DefaultMode(false, Direction.SPRINGER)),
     D(new DefaultMode(true, Direction.QUEEN)),
     T(new DefaultMode(true, Direction.TOWER)),
-    L(new DefaultMode(true, Direction.BISCHOP)),
+    L(new DefaultMode(true, Direction.BISHOP)),
     EMPTY(new DefaultMode(true, Collections.emptyList()));
 
     private VerifyMode verifyMode;
