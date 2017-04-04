@@ -24,3 +24,6 @@ notifications:
   email:
   - erikrohkohl@googlemail.com
   - matthias.zober@gmx.de
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
