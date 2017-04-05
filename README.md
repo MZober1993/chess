@@ -4,6 +4,11 @@ This repository contains a little command-line chess tool.
 The main usage of this repository is to exercise with KI, algorithm 
 and datastructures. 
 
+## Build-State
+
+[![Branch: master](https://travis-ci.org/MZober1993/chess.svg?branch=master)](https://travis-ci.org//MZober1993/chess)
+[![codecov](https://codecov.io/gh/MZober1993/chess/branch/master/graph/badge.svg)](https://codecov.io/gh/MZober1993/chess)
+
 ### Motivation
 The main motivation is to realize a funny chess game, 
 but the interesting part is the implementation of the game itself.

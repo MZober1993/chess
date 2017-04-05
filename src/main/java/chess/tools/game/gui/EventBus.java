@@ -1,6 +1,6 @@
 package chess.tools.game.gui;
 
-import chess.tools.game.Chess;
+import chess.tools.Chess;
 import chess.tools.game.Figure;
 import chess.tools.move.MoveTuple;
 import chess.tools.move.Position;

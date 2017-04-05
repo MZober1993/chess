@@ -1,5 +1,6 @@
 package chess.tools.game;
 
+import chess.tools.Chess;
 import chess.tools.move.MoveTuple;
 import chess.tools.move.Position;
 
