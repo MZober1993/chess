@@ -4,13 +4,13 @@ import chess.tools.game.Figure;
 import chess.tools.model.BoardModel;
 
 public class MoveTuple {
+
     private final Position begin;
     private final Position end;
     private final boolean possible;
     private Figure figure = Figure.EMPTY;
 
     public MoveTuple(Position begin, Position end, boolean possible) {
-
         this.begin = begin;
         this.end = end;
         this.possible = possible;

@@ -25,10 +25,10 @@ public class DefaultMode implements VerifyMode {
         int endOffset = repeating ? 8 : 2;
         for (Direction dir : directions) {
             for (int i = 1; i < endOffset; i++) {
-                if (begin.getColumn() + i * dir.getC() < 0 || begin.getRow() + i * dir.getR() < 0) {
+                if (begin.getColumn() + i * dir.getColumn() < 0 || begin.getRow() + i * dir.getRow() < 0) {
                     continue;
                 }
-                final Position newPos = new Position(begin.getColumn() + i * dir.getC(), begin.getRow() + i * dir.getR());
+                final Position newPos = new Position(begin.getColumn() + i * dir.getColumn(), begin.getRow() + i * dir.getRow());
                 if (newPos.isValid() && !possibleFields.contains(newPos)) {
                     final Figure newFigure = model.getFigureOnBoard(newPos);
                     if (newFigure.equals(Figure.EMPTY)) {

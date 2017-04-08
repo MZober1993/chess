@@ -21,7 +21,7 @@ public class PawnMode implements VerifyMode {
         List<Position> possibleFields = new ArrayList<>();
         Position begin = current.getPosition();
         for (Direction dir : directions) {
-            final Position newPos = new Position(begin.getColumn() + dir.getC(), begin.getRow() + dir.getR());
+            final Position newPos = new Position(begin.getColumn() + dir.getColumn(), begin.getRow() + dir.getRow());
 
             if (newPos.isValid() && !possibleFields.contains(newPos)) {
                 final Figure newFigure = model.getFigureOnBoard(newPos);

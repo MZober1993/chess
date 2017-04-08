@@ -1,6 +1,6 @@
 package chess.tools.move;
 
-public class Position {
+public class Position implements TwoD {
     private final int i;
     private final int j;
     private final boolean valid;
@@ -20,10 +20,12 @@ public class Position {
         valid = !(j > 7 || i > 7);
     }
 
+    @Override
     public int getRow() {
         return j;
     }
 
+    @Override
     public int getColumn() {
         return i;
     }

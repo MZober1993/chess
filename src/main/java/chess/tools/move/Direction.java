@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Direction {
+public class Direction implements TwoD {
 
     public static final List<Direction> TOWER = Stream.of(new Direction(1, 0), new Direction(-1, 0),
             new Direction(0, 1), new Direction(0, -1))
@@ -27,21 +27,23 @@ public class Direction {
     private final int j;
     private boolean attackingMode = true;
 
-    Direction(int i, int j) {
+    private Direction(int i, int j) {
         this.i = i;
         this.j = j;
     }
 
-    Direction(int i, int j, boolean attackingMode) {
+    private Direction(int i, int j, boolean attackingMode) {
         this(i, j);
         this.attackingMode = attackingMode;
     }
 
-    public int getR() {
+    @Override
+    public int getRow() {
         return i;
     }
 
-    public int getC() {
+    @Override
+    public int getColumn() {
         return j;
     }
 
