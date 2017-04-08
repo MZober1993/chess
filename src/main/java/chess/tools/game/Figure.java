@@ -1,5 +1,6 @@
 package chess.tools.game;
 
+import chess.tools.model.BoardModel;
 import chess.tools.move.Position;
 import chess.tools.move.strategy.MoveStrategy;
 
@@ -75,16 +76,12 @@ public enum Figure {
         return this.figureLabel;
     }
 
-    public boolean verifyMove(Position begin, Position end, Figure[][] board) {
-        return this.moveStrategy.verify(begin, end, board);
+    public boolean verifyMove(Position begin, Position end, BoardModel model) {
+        return this.moveStrategy.verify(begin, end, model);
     }
 
     public boolean isOppositeColor(Figure opposite) {
         return !this.color.equals(opposite.color);
-    }
-
-    public static Figure figureForPos(Figure[][] board, Position position) {
-        return board[position.getC()][position.getR()];
     }
 
     @Override
@@ -104,8 +101,8 @@ public enum Figure {
         this.position = position;
     }
 
-    public List<Position> possibleFields(Figure[][] board) {
-        return getMoveStrategy().getVerifyMode().possibleFields(this, board);
+    public List<Position> possibleFields(BoardModel model) {
+        return getMoveStrategy().getVerifyMode().possibleFields(this, model);
     }
 
     public boolean isEaten() {

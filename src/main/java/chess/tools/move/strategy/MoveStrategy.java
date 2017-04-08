@@ -1,12 +1,13 @@
 package chess.tools.move.strategy;
 
-import chess.tools.game.Figure;
+import chess.tools.model.BoardModel;
 import chess.tools.move.Direction;
 import chess.tools.move.Position;
 
 import java.util.Collections;
 
 public enum MoveStrategy {
+
     BB(new PawnMode(Direction.PAWN_BLACK)),
     BW(new PawnMode(Direction.PAWN_WHITE)),
     K(new DefaultMode(false, Direction.QUEEN)),
@@ -22,8 +23,8 @@ public enum MoveStrategy {
         this.verifyMode = verifyMode;
     }
 
-    public boolean verify(Position begin, Position end, Figure[][] board) {
-        return verifyMode.verify(begin, end, board);
+    public boolean verify(Position begin, Position end, BoardModel model) {
+        return verifyMode.verify(begin, end, model);
     }
 
     public VerifyMode getVerifyMode() {

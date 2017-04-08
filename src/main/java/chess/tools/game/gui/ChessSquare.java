@@ -4,12 +4,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.logging.Logger;
 
 public class ChessSquare extends JPanel implements MouseListener {
 
     private int index;
     private final Color color;
     private boolean chosen = false;
+    private Logger logger = Logger.getLogger(ChessSquare.class.getName());
 
     public ChessSquare(int index) {
 
@@ -35,7 +37,7 @@ public class ChessSquare extends JPanel implements MouseListener {
     @Override
     public void mouseClicked(MouseEvent mouseEvent) {
         if (EventBus.CHESS.registerSquare(this)) {
-            System.out.println("choose: " + index);
+            logger.info("choose: " + index);
             setBackground(Color.green);
             chosen = true;
         }

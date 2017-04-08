@@ -1,29 +1,34 @@
 package chess.tools.game;
 
+import chess.tools.Chess;
+import chess.tools.model.BoardModel;
 import chess.tools.move.MoveTuple;
 import chess.tools.move.Position;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class GameEndCalculator {
+
     private ChessColor defenderColor;
     private List<Position> forbiddenFields;
-    private Figure[][] board;
+    private BoardModel ownBoardModel;
     private Figure king;
     private Figure oldFigureBeforeSimulation;
     private MoveTuple lastNoCheckMateMove = new MoveTuple(new Position(0, 0), new Position(0, 0), false);
     private MoveTuple lastNoStalementMove = new MoveTuple(new Position(0, 0), new Position(0, 0), false);
     private List<Position> possibleKingMoves = new ArrayList<>();
+    private Logger logger = Logger.getLogger(GameEndCalculator.class.getName());
 
-    public void changeState(ChessColor defenderColor, Figure[][] board) {
+    public void changeState(ChessColor defenderColor, BoardModel model) {
         this.defenderColor = defenderColor;
         this.king = defenderColor.king();
         this.forbiddenFields = defenderColor.oppositColor().calcNotEaten().stream()
-                .flatMap(figure -> figure.possibleFields(board).stream()).collect(Collectors.toList());
-        this.board = board;
+                .flatMap(figure -> figure.possibleFields(model).stream()).collect(Collectors.toList());
+        this.ownBoardModel = model;
     }
 
     /**
@@ -36,14 +41,14 @@ public class GameEndCalculator {
             setLastNoCheckMate(king, king.getPosition(), possibleKingMoves.get(0));
             return false;
         } else {
-            final Map<Figure, List<Position>> moves = MoveCalculator.calcMoves(defenderColor.calcNotEaten(), board);
+            final Map<Figure, List<Position>> moves = MoveCalculator.calcMoves(defenderColor.calcNotEaten(), ownBoardModel);
             for (Map.Entry<Figure, List<Position>> entry : moves.entrySet()) {
                 for (Position pos : entry.getValue()) {
                     final Figure key = entry.getKey();
                     final Position oldPosition = key.getPosition();
-                    System.out.println("simulate for: " + key.getColor() + " " + key + " on " + Chess.MAPPING.getCommandMapping().get(pos));
+                    logger.info("simulate for: " + key.getColor() + " " + key + " on " + Chess.MAPPING.getCommandMapping().get(pos));
                     simulateMove(key, pos);
-                    if (!verifyChessState(board, defenderColor.oppositColor(), false)) {
+                    if (!verifyChessState(ownBoardModel, defenderColor.oppositColor(), false)) {
                         undoSimulation(key, pos);
                         setLastNoCheckMate(key, oldPosition, pos);
                         return false;
@@ -61,7 +66,7 @@ public class GameEndCalculator {
      * @return checkmate
      */
     public boolean validateStalement() {
-        if (!defenderColor.calcNotEatenWithoutKing().stream().flatMap(fig -> fig.possibleFields(board).stream())
+        if (!defenderColor.calcNotEatenWithoutKing().stream().flatMap(fig -> fig.possibleFields(ownBoardModel).stream())
                 .collect(Collectors.toList()).isEmpty()) {
             return false;
         }
@@ -70,12 +75,12 @@ public class GameEndCalculator {
             setLastNoStalement(king, king.getPosition(), possibleKingMoves.get(0));
             return false;
         } else {
-            final List<Position> positions = king.possibleFields(board);
+            final List<Position> positions = king.possibleFields(ownBoardModel);
             for (Position pos : positions) {
                 final Position oldPosition = king.getPosition();
-                System.out.println("simulate for: " + king.getColor() + " " + king + " on " + Chess.MAPPING.getCommandMapping().get(pos));
+                logger.info("simulate for: " + king.getColor() + " " + king + " on " + Chess.MAPPING.getCommandMapping().get(pos));
                 simulateMove(king, pos);
-                if (!verifyChessState(board, defenderColor.oppositColor(), false)) {
+                if (!verifyChessState(ownBoardModel, defenderColor.oppositColor(), false)) {
                     undoSimulation(king, pos);
                     setLastNoStalement(king, oldPosition, pos);
                     return false;
@@ -88,45 +93,45 @@ public class GameEndCalculator {
 
     private void simulateMove(Figure figure, Position position) {
         final Position figurePosition = figure.getPosition();
-        board[figurePosition.getC()][figurePosition.getR()] = Figure.EMPTY;
-        oldFigureBeforeSimulation = board[position.getC()][position.getR()];
-        board[position.getC()][position.getR()] = figure;
+        ownBoardModel.setFigureOnBoard(Figure.EMPTY, figurePosition);
+        oldFigureBeforeSimulation = ownBoardModel.getFigureOnBoard(position);
+        ownBoardModel.setFigureOnBoard(figure, position);
     }
 
     private void undoSimulation(Figure figure, Position position) {
         final Position figurePosition = figure.getPosition();
-        board[figurePosition.getC()][figurePosition.getR()] = figure;
-        board[position.getC()][position.getR()] = oldFigureBeforeSimulation;
+        ownBoardModel.setFigureOnBoard(figure, figurePosition);
+        ownBoardModel.setFigureOnBoard(oldFigureBeforeSimulation, position);
     }
 
     private boolean kingMoveWithoutAttackingPossible() {
-        final List<Position> positions = king.possibleFields(board);
+        final List<Position> positions = king.possibleFields(ownBoardModel);
         if (positions.isEmpty() || positions.stream().allMatch(forbiddenFields::contains)) {
             return false;
         }
 
         possibleKingMoves = positions.stream().filter(pos -> !forbiddenFields.contains(pos))
-                .filter(pos -> Figure.figureForPos(board, pos).equals(Figure.EMPTY)).collect(Collectors.toList());
+                .filter(pos -> ownBoardModel.getFigureOnBoard(pos).equals(Figure.EMPTY)).collect(Collectors.toList());
         return !possibleKingMoves.isEmpty();
     }
 
     /**
-     * @param board           - board
+     * @param model           - ownBoardModel
      * @param color           - color of attacker
      * @param loggingMessages - logging messages on?
      * @return chess?
      */
-    public static boolean verifyChessState(Figure[][] board, ChessColor color, boolean loggingMessages) {
+    public static boolean verifyChessState(BoardModel model, ChessColor color, boolean loggingMessages) {
         for (Figure figure : color.calcNotEaten()) {
             final List<Position> positions = figure.getMoveStrategy().getVerifyMode()
-                    .possibleFields(figure, board);
+                    .possibleFields(figure, model);
             final List<Figure> figures = positions
-                    .stream().map(pos -> Figure.figureForPos(board, pos)).collect(Collectors.toList());
+                    .stream().map(model::getFigureOnBoard).collect(Collectors.toList());
             final List<Figure> chessSources = figures.stream().filter(f -> f.equals(color.oppositColor().king()))
                     .collect(Collectors.toList());
             if (!chessSources.isEmpty()) {
                 if (loggingMessages) {
-                    System.out.println("Chess for color: " + color.oppositColor() + " from: " + figure);
+                    Logger.getGlobal().warning("Chess for color: " + color.oppositColor() + " from: " + figure);
                 }
                 return true;
             }
@@ -140,10 +145,6 @@ public class GameEndCalculator {
 
     public List<Position> getForbiddenFields() {
         return forbiddenFields;
-    }
-
-    public Figure[][] getBoard() {
-        return board;
     }
 
 

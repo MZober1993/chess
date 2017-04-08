@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class PositionMapping {
     private Map<Position, String> commandMapping = new HashMap<>();
 
-    PositionMapping() {
+    public PositionMapping() {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 Position pos = new Position(j, i);

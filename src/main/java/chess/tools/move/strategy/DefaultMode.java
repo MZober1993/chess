@@ -1,6 +1,7 @@
 package chess.tools.move.strategy;
 
 import chess.tools.game.Figure;
+import chess.tools.model.BoardModel;
 import chess.tools.move.Direction;
 import chess.tools.move.Position;
 
@@ -18,18 +19,18 @@ public class DefaultMode implements VerifyMode {
     }
 
     @Override
-    public List<Position> possibleFields(Figure current, Figure[][] board) {
+    public List<Position> possibleFields(Figure current, BoardModel model) {
         List<Position> possibleFields = new ArrayList<>();
         Position begin = current.getPosition();
         int endOffset = repeating ? 8 : 2;
         for (Direction dir : directions) {
             for (int i = 1; i < endOffset; i++) {
-                if (begin.getC() + i * dir.getC() < 0 || begin.getR() + i * dir.getR() < 0) {
+                if (begin.getColumn() + i * dir.getColumn() < 0 || begin.getRow() + i * dir.getRow() < 0) {
                     continue;
                 }
-                final Position newPos = new Position(begin.getC() + i * dir.getC(), begin.getR() + i * dir.getR());
+                final Position newPos = new Position(begin.getColumn() + i * dir.getColumn(), begin.getRow() + i * dir.getRow());
                 if (newPos.isValid() && !possibleFields.contains(newPos)) {
-                    final Figure newFigure = Figure.figureForPos(board, newPos);
+                    final Figure newFigure = model.getFigureOnBoard(newPos);
                     if (newFigure.equals(Figure.EMPTY)) {
                         possibleFields.add(newPos);
                     } else if (current.isOppositeColor(newFigure)) {

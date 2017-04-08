@@ -1,7 +1,8 @@
 package chess.tools.game.gui;
 
-import chess.tools.game.Chess;
+import chess.tools.Chess;
 import chess.tools.game.Figure;
+import chess.tools.model.BoardModel;
 import chess.tools.move.MoveTuple;
 import chess.tools.move.Position;
 
@@ -11,7 +12,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public enum EventBus {
+enum EventBus {
     CHESS;
 
     private Chess chess;
@@ -25,14 +26,14 @@ public enum EventBus {
         chessSquares = IntStream.range(0, 64).boxed().map(i -> new ChessSquare(i)).collect(Collectors.toList());
         chessSquares.forEach(chessBoard::add);
 
-        chess = new Chess(false);
-        showFiguresOnPanel(chess.getBoard());
+        chess = new Chess();
+        showFiguresOnPanel(chess.getChessModel().getBoardModel());
     }
 
-    private void showFiguresOnPanel(Figure[][] board) {
+    private void showFiguresOnPanel(BoardModel model) {
         IntStream.range(0, 64).parallel().forEach(i -> {
             final Position position = new Position(i);
-            final Figure figure = board[position.getC()][position.getR()];
+            final Figure figure = model.getFigureOnBoard(position);
             if (!figure.equals(Figure.EMPTY)) {
                 chessSquares.get(position.getIndex()).add(figure.getFigureLabel());
             }
@@ -46,12 +47,12 @@ public enum EventBus {
     public boolean registerSquare(ChessSquare square) {
         boolean moveValid = false;
         final Position currentPos = new Position(square.getIndex());
-        final Figure currentFigure = chess.figureOnBoard(currentPos);
+        final Figure currentFigure = chess.getChessModel().getFigureOnBoard(currentPos);
         final boolean validFigure = chess.colorValidation(currentPos) && !currentFigure.equals(Figure.EMPTY);
 
         if (isBeginSquareIndex.test(registratedSquareIndex) && isStraight.negate().test(chooseCounter)) {
             final Position begin = new Position(registratedSquareIndex);
-            if (chess.figureOnBoard(begin).isOppositeColor(currentFigure)) {
+            if (chess.getChessModel().getFigureOnBoard(begin).isOppositeColor(currentFigure)) {
                 MoveTuple move = new MoveTuple(begin, currentPos, true);
                 moveValid = chess.gameStep(move);
             } else if (validFigure) {
