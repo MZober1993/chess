@@ -1,45 +1,47 @@
 package chess.tools.move.strategy;
 
 import chess.tools.game.Figure;
+import chess.tools.model.BoardModel;
 import chess.tools.move.Position;
 
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public interface VerifyMode {
 
-    default boolean verify(Position begin, Position end, Figure[][] board) {
-        final Figure current = Figure.figureForPos(board, begin);
+    default boolean verify(Position begin, Position end, BoardModel model) {
+        final Figure current = model.getFigureOnBoard(begin);
         if (current.equals(Figure.EMPTY)) {
             return false;
         }
-        final List<Position> positions = possibleFields(current, board);
+        final List<Position> positions = possibleFields(current, model);
         return !positions.isEmpty() && positions.contains(end)
-                && !verifyOwnChess(begin, end, board, current);
+                && !verifyOwnChess(begin, end, model, current);
     }
 
-    default boolean verifyOwnChess(Position begin, Position end, Figure[][] board, Figure current) {
-        board[begin.getC()][begin.getR()] = Figure.EMPTY;
-        final Figure endFigure = board[end.getC()][end.getR()];
-        board[end.getC()][end.getR()] = current;
+    default boolean verifyOwnChess(Position begin, Position end, BoardModel model, Figure current) {
+        model.setFigureOnBoard(Figure.EMPTY, begin);
+        final Figure endFigure = model.getFigureOnBoard(end);
+        model.setFigureOnBoard(current, end);
 
         for (Figure figure : current.getColor().oppositColor().calcNotEaten()) {
             final List<Position> positions = figure.getMoveStrategy().getVerifyMode()
-                    .possibleFields(figure, board);
+                    .possibleFields(figure, model);
             final List<Figure> figures = positions
-                    .stream().map(pos -> Figure.figureForPos(board, pos)).collect(Collectors.toList());
+                    .stream().map(model::getFigureOnBoard).collect(Collectors.toList());
             if (figures.stream().anyMatch(f -> f.equals(current.getColor().king()))) {
-                board[begin.getC()][begin.getR()] = current;
-                board[end.getC()][end.getR()] = endFigure;
-                System.out.println("If you do that, your king will be chess.");
+                model.setFigureOnBoard(current, begin);
+                model.setFigureOnBoard(endFigure, end);
+                Logger.getGlobal().warning("If you do that, your king will be chess.");
                 return true;
             }
         }
 
-        board[begin.getC()][begin.getR()] = current;
-        board[end.getC()][end.getR()] = endFigure;
+        model.setFigureOnBoard(current, begin);
+        model.setFigureOnBoard(endFigure, end);
         return false;
     }
 
-    List<Position> possibleFields(Figure current, Figure[][] board);
+    List<Position> possibleFields(Figure current, BoardModel model);
 }

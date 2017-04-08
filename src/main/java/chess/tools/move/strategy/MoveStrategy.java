@@ -1,6 +1,6 @@
 package chess.tools.move.strategy;
 
-import chess.tools.game.Figure;
+import chess.tools.model.BoardModel;
 import chess.tools.move.Direction;
 import chess.tools.move.Position;
 
@@ -22,8 +22,8 @@ public enum MoveStrategy {
         this.verifyMode = verifyMode;
     }
 
-    public boolean verify(Position begin, Position end, Figure[][] board) {
-        return verifyMode.verify(begin, end, board);
+    public boolean verify(Position begin, Position end, BoardModel model) {
+        return verifyMode.verify(begin, end, model);
     }
 
     public VerifyMode getVerifyMode() {

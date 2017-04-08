@@ -1,6 +1,7 @@
 package chess.tools.move.strategy;
 
 import chess.tools.game.Figure;
+import chess.tools.model.BoardModel;
 import chess.tools.move.Direction;
 import chess.tools.move.Position;
 
@@ -16,14 +17,14 @@ public class PawnMode implements VerifyMode {
     }
 
     @Override
-    public List<Position> possibleFields(Figure current, Figure[][] board) {
+    public List<Position> possibleFields(Figure current, BoardModel model) {
         List<Position> possibleFields = new ArrayList<>();
         Position begin = current.getPosition();
         for (Direction dir : directions) {
-            final Position newPos = new Position(begin.getC() + dir.getC(), begin.getR() + dir.getR());
+            final Position newPos = new Position(begin.getColumn() + dir.getC(), begin.getRow() + dir.getR());
 
             if (newPos.isValid() && !possibleFields.contains(newPos)) {
-                final Figure newFigure = Figure.figureForPos(board, newPos);
+                final Figure newFigure = model.getFigureOnBoard(newPos);
                 if (dir.isAttackingMode()) {
                     if (current.isOppositeColor(newFigure) && !newFigure.equals(Figure.EMPTY)) {
                         possibleFields.add(newPos);

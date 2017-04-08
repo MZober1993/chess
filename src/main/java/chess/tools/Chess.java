@@ -1,59 +1,35 @@
 package chess.tools;
 
-import java.io.Console;
-import java.util.List;
-
-import chess.tools.game.ChessColor;
-import chess.tools.game.CommandParser;
-import chess.tools.game.Figure;
-import chess.tools.game.GameEndCalculator;
-import chess.tools.game.PositionMapping;
+import chess.tools.game.*;
 import chess.tools.model.ChessModel;
 import chess.tools.move.MoveManager;
 import chess.tools.move.MoveTuple;
 import chess.tools.move.Position;
 
-public class Chess{
+import java.util.List;
+import java.util.logging.Logger;
 
-    private static final String INFO_ABOUT_TURN = "Please type your move in form of: 'e4 e5'";
- 
+public class Chess {
+
     private ChessModel chessModel;
     private MoveManager moveManager;
-    
-    private Console console = System.console();
+    private Logger logger = Logger.getLogger(Chess.class.getName());
     private CommandParser parser = new CommandParser();
     private final GameEndCalculator endCalculator = new GameEndCalculator();
 
     public static final PositionMapping MAPPING = new PositionMapping();
 
-    public Chess(boolean gameModeOn) {
-    	
-    	chessModel = new ChessModel(false, false);        
-        /*
-        if (gameModeOn) {
-            do {
-                if (turnCounter > 10) {
-                    endCalculator.changeState(colorOnTurn(), board);
-                    if (endCalculator.validateStalement()) {
-                        stalement = true;
-                    }
-                }
-                if (turn() && !stalement) {
-                    calculateCheckMate();
-                    printCheckMateState();
-                }
-                System.out.println(boardToString(board));
-            } while (!isCheckMate() && !isStalement());
-        }*/
+    public Chess() {
+        chessModel = new ChessModel();
+        moveManager = new MoveManager(chessModel);
     }
 
     public Chess(List<String> terms) {
-    	chessModel = new ChessModel(false, false);
-    	moveManager = new MoveManager(chessModel);
+        chessModel = new ChessModel();
+        moveManager = new MoveManager(chessModel);
         terms.forEach(this::processTerm);
-        // TODO add Logging
     }
-    
+
     /**
      * @param move - a possible move
      * @return valid or not
@@ -65,17 +41,14 @@ public class Chess{
         return (size == sizeBefore + 1) && chessModel.getTurnValids().get(size - 1);
     }
 
-    public Figure figureOnBoard(Position position) { // TODO extract to class chessModel
-        return Figure.figureForPos(chessModel.getBoard(), position);
-    }
-
     public boolean colorValidation(Position begin) {
-        Figure oldBegin = chessModel.getBoard()[begin.getC()][begin.getR()];
-        return oldBegin.getColor().validateTurn(moveManager.getTurnCounter());
+        Figure oldBegin = chessModel.getFigureOnBoard(begin);
+        ChessColor color = oldBegin.getColor();
+        return color.validateTurn(moveManager.getTurnCounter());
     }
-  
 
-    public void processTerm(String term) { 
+    public void processTerm(String term) {
+        logger.info("Do move: " + term);
         endCalculatorChecks();
         if (turn(term) && !isStalement()) {
             calculateCheckMate();
@@ -83,6 +56,7 @@ public class Chess{
     }
 
     public void processMove(MoveTuple move) {
+        logger.info("Do move: " + move);
         endCalculatorChecks();
         if (turn(move) && !isStalement()) {
             calculateCheckMate();
@@ -91,7 +65,8 @@ public class Chess{
 
     private void endCalculatorChecks() {
         if (moveManager.getTurnCounter() > 10) {
-            endCalculator.changeState(colorOnTurn(), chessModel.getBoard());
+            logger.info("Calculate game end...");
+            endCalculator.changeState(colorOnTurn(), chessModel.getBoardModel());
             if (endCalculator.validateStalement()) {
                 chessModel.setStalement(true);
             }
@@ -99,21 +74,10 @@ public class Chess{
     }
 
     private void calculateCheckMate() {
+        logger.info("Calculate check mate...");
         final ChessColor defenderColor = colorOnTurn();
-        endCalculator.changeState(defenderColor, chessModel.getBoard());
+        endCalculator.changeState(defenderColor, chessModel.getBoardModel());
         chessModel.setCheckmate(endCalculator.validateCheckMate());
-    }
-
-    public boolean turn() {
-        String command = console.readLine(INFO_ABOUT_TURN);
-        MoveTuple move = parser.parse(command);
-        while (!move.isPossible()) {
-            System.out.println("Please choose an other move, this one is not possible.");
-            command = console.readLine(INFO_ABOUT_TURN);
-            move = parser.parse(command);
-            chessModel.getTurnValids().add(false);
-        }
-        return validateColorDoMove(move);
     }
 
     private boolean turn(String term) {
@@ -125,7 +89,7 @@ public class Chess{
         chessModel.getMoves().add(move);
         if (!move.isPossible()) {
             chessModel.getTurnValids().add(false);
-            System.out.println("Please choose an other move, this one is not possible.");
+            logger.warning("Please choose an other move, this one is not possible.");
         } else {
             return validateColorDoMove(move);
         }
@@ -133,26 +97,26 @@ public class Chess{
     }
 
     private boolean validateColorDoMove(MoveTuple move) {
-        if (move.rightColor(chessModel.getBoard(), moveManager.getTurnCounter())) {
-            System.out.println(move.getBegin());
-            System.out.println("Move:" + MAPPING.getCommandMapping().get(move.getBegin()) + ","
+        if (move.rightColor(chessModel.getBoardModel(), moveManager.getTurnCounter())) {
+            logger.info(move.getBegin().toString());
+            logger.info("Move:" + MAPPING.getCommandMapping().get(move.getBegin()) + ","
                     + MAPPING.getCommandMapping().get(move.getEnd()));
             return doMove(move);
         } else {
-            //System.out.println("Not your turn!");
+            logger.warning("Not your turn!");
             return false;
         }
     }
 
     private boolean doMove(MoveTuple move) {
-        System.out.println(move);
+        logger.info(move.toString());
         final Position begin = move.getBegin();
         final Position end = move.getEnd();
-        Figure oldBegin = chessModel.getBoard()[begin.getC()][begin.getR()];
-        if (oldBegin.verifyMove(begin, end, chessModel.getBoard())) {
+        Figure oldBegin = chessModel.getFigureOnBoard(begin);
+        if (oldBegin.verifyMove(begin, end, chessModel.getBoardModel())) {
             return moveManager.makePossibleMove(begin, end, oldBegin);
         } else {
-            //System.out.println("Please try again!");
+            logger.warning("Please try again!");
             chessModel.getTurnValids().add(false);
         }
         return false;
@@ -168,22 +132,18 @@ public class Chess{
                 ? ChessColor.BLACK : ChessColor.EMPTY;
     }
 
-    public Figure[][] getBoard() {
-        return chessModel.getBoard();
-    }
-
     public GameEndCalculator getEndCalculator() {
         return this.endCalculator;
     }
 
     public boolean isStalement() {
-        //if (chessModel.isStalement()) {
-          //  System.out.println("--------------- Patt ----------------");
-        //}
+        if (chessModel.isStalement()) {
+            logger.warning("--------------- Patt ----------------");
+        }
         return chessModel.isStalement();
     }
-    
-    public ChessModel getChessModel(){
-    	return chessModel;
+
+    public ChessModel getChessModel() {
+        return chessModel;
     }
 }

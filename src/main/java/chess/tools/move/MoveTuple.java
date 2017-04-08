@@ -1,6 +1,7 @@
 package chess.tools.move;
 
 import chess.tools.game.Figure;
+import chess.tools.model.BoardModel;
 
 public class MoveTuple {
     private final Position begin;
@@ -35,8 +36,8 @@ public class MoveTuple {
         this.figure = figure;
     }
 
-    public boolean rightColor(Figure[][] board, int turnCounter) {
-        Figure oldBegin = board[begin.getC()][begin.getR()];
+    public boolean rightColor(BoardModel model, int turnCounter) {
+        Figure oldBegin = model.getFigureOnBoard(begin);
         return oldBegin.getColor().validateTurn(turnCounter);
     }
 

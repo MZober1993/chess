@@ -20,11 +20,11 @@ public class Position {
         valid = !(j > 7 || i > 7);
     }
 
-    public int getR() {
+    public int getRow() {
         return j;
     }
 
-    public int getC() {
+    public int getColumn() {
         return i;
     }
 
