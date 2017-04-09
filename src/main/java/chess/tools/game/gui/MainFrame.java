@@ -5,7 +5,13 @@ import java.awt.*;
 
 public class MainFrame extends JFrame {
 
-    JLayeredPane layeredPane;
+    /**
+	 * TODO 
+	 * serialVersionUID ? Mein Compiler zeigt eine Warnung an.
+	 * 
+	 * @author Review
+	 */
+	JLayeredPane layeredPane;
     JPanel chessBoard;
 
     public MainFrame() {

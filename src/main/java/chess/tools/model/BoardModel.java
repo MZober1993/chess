@@ -3,8 +3,27 @@ package chess.tools.model;
 import chess.tools.game.Figure;
 import chess.tools.move.Position;
 
+/**
+ * TODO
+ * 
+ * Vielleicht hast du Recht und man kann diese zusätzliche Klasse wirklich weglassen 
+ * sowie das Board als Member in ChessModel lassen. Mir ging es beim Anlegen dieser Klasse nur darum, 
+ * die toString()-Methode sinnvoll auszulagern.
+ * 
+ * @author Review
+ *
+ */
 public class BoardModel {
 
+	/**
+	 * TODO
+	 * @author Review
+	 * 
+	 * Die beiden Achten in new Figure[8][8] würde ich durch eine Konstante ersetzen.
+	 * 
+	 * private final int boradSize = 8;
+	 * private Figure[][] board = new Figure[boradSize][boradSize];
+	 */
 	private Figure[][] board = new Figure[8][8];
 
     public Figure getFigureOnBoard(Position position) {
@@ -33,6 +52,13 @@ public class BoardModel {
             line = 8 - i;
             result += line;
             for (int j = 0; j < 8; j++) {
+            	
+            	/**
+            	 * TODO 
+            	 * FindBug findet es nicht ganz so toll, dass du hier einen String in der Schleife
+            	 * konkatenierst. StringBuilder ?
+            	 * @author Review
+            	 */
                 result += "\t" + board[i][j];
             }
             result += "\t" + line + "\n";

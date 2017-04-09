@@ -76,6 +76,14 @@ public enum Figure {
         return this.figureLabel;
     }
 
+    /**
+ 	 * TODO
+ 	 * 
+ 	 * Ich persönlich finde es übersichtlicher, wenn Methoden, die Verhalten implementieren, 
+ 	 * weiter oben in der Klasse stehen und einfache Getter und Setter Methoden dann unten.
+ 	 * 
+ 	 * @author Review
+     */
     public boolean verifyMove(Position begin, Position end, BoardModel model) {
         return this.moveStrategy.verify(begin, end, model);
     }
@@ -101,7 +109,14 @@ public enum Figure {
         this.position = position;
     }
 
-    public List<Position> possibleFields(BoardModel model) {
+    /**
+ 	 * TODO
+ 	 * 
+ 	 * Ich persönlich finde es übersichtlicher, wenn Methoden, die Verhalten implementieren, 
+ 	 * weiter oben in der Klasse stehen und einfache Getter und Setter Methoden dann unten.
+ 	 * 
+ 	 * @author Review
+     */ List<Position> possibleFields(BoardModel model) {
         return getMoveStrategy().getVerifyMode().possibleFields(this, model);
     }
 

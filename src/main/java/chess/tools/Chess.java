@@ -9,6 +9,14 @@ import chess.tools.move.Position;
 import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * TODO 
+ * Vielleicht sollten wir Chess als eigenes API (ausschließlich Interfaces) in einem seperaten JAR ausliefern. 
+ * Damit wir unsere eigentliche Logik besser von der GUI trennen und später die KI besser einbauen können, oder?
+ *
+ * @author Review
+ *
+ */
 public class Chess {
 
     private ChessModel chessModel;

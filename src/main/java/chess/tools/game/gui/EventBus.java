@@ -12,6 +12,20 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * TODO
+ * 
+ * Vielleicht noch ein bisschen JavaDoc, welche die Motivation eines EventBus und 
+ * die Architektur-Entscheidung begründet.
+ * 
+ * Ich verstehe den EventBus noch nicht ganz. Ich finde den etwas zu angepasst. Leider gibt
+ * es dafür kein Interface in der Java Standard Edition. Ich habe hier ein kleines Tutorial
+ * gefunden (http://www.tutego.de/blog/javainsel/2009/03/einfuhrung-in-den-eventbus/), das
+ * einen allgemeineren Ansatz zeigt. 
+ * 
+ * @author Review
+ *
+ */
 enum EventBus {
     CHESS;
 

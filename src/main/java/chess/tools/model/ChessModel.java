@@ -60,6 +60,11 @@ public class ChessModel extends Observable{
      *
      * @return Figure on Board
      */
+    
+    /**
+     * Diese zusätzliche Ebene der Indirektion gefällt mir eigentlich nicht so, mir fällt aber auch keine bessere
+     * Lösung ein. Könnte man nicht das Chess 
+     */
     public Figure getFigureOnBoard(int column, int row) {
         return model.getFigureOnBoard(column, row);
     }
